@@ -19,8 +19,13 @@ export default class Input {
     if (direction) {
       this.emit('input', direction);
     }
-    if (event.keyCode === c.KEY_P) {
-      this.emit('pause-unpause');
+    switch (event.keyCode) {
+      case c.KEY_P:
+        this.emit('pause-unpause');
+        break;
+      case c.KEY_R:
+        this.emit('reset');
+        break;
     }
   }
   start(event, listener) {

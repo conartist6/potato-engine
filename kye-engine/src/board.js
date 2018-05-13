@@ -103,11 +103,12 @@ export default class Board {
     this._entitiesToDelete = [];
   }
 
-  start() {
+  start(event, listener) {
     this._paused = false;
     this.on('tick', () => {
       this._setTickTimeout();
     });
+    this.on(event, listener);
     this._setTickTimeout();
     this._emit('start');
   }
@@ -120,10 +121,9 @@ export default class Board {
   }
 
   end() {
-    allOff(this);
-    this._paused = true;
     this._clearTickTimeout();
     this._emit('end');
+    allOff(this);
   }
 
   _setTickTimeout() {

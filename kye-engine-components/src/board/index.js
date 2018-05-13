@@ -17,13 +17,10 @@ export default class Board extends PureComponent {
     }
   }
   setupBoard(board) {
-    board.on('tick', (this._listener = () => this.forceUpdate()));
-    board.start();
+    board.start('tick', () => this.forceUpdate());
   }
   teardownBoard(board) {
     board.end();
-    board.off('tick', this._listener);
-    this._listener = null;
   }
   render() {
     const { board } = this.props;

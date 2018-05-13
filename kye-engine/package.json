@@ -5,7 +5,8 @@
   "dependencies": {
     "event-emitter": "^0.3.5",
     "immutable": "^3.8.2",
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "prando": "^3.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -25,8 +26,7 @@
   "scripts": {
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir lib",
-    "build":
-      "npm run build:es && renamer --regex --find '\\.js$' --replace '.mjs' 'lib/**' && npm run build:commonjs",
+    "build": "npm run build:es && renamer --regex --find '\\.js$' --replace '.mjs' 'lib/**' && npm run build:commonjs",
     "watch": "npm-watch",
     "clean": "rimraf lib es"
   }

@@ -19,10 +19,10 @@ export default class Monster extends Interactor {
   }
 
   think(board, coords) {
-    if (Math.random() > 0.5) {
+    if (board.random.nextBoolean()) {
       board.seek(coords);
     } else {
-      board.move(coords, randomDirection());
+      board.move(coords, randomDirection(board.random));
     }
   }
 

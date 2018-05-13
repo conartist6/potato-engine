@@ -136,11 +136,11 @@ export function aligned(orientation, direction) {
   return directionsByOrientation[orientation].includes(direction);
 }
 
-export function randomDirection(orientation = null) {
+export function randomDirection(random, orientation = null) {
   if (!orientation) {
-    return directions[Math.floor(Math.random() * 3 + 0.5)];
+    return directions[random.nextInt(0, 3)];
   } else {
-    return directionsByOrientation[orientation][Math.floor(Math.random() + 0.5)];
+    return directionsByOrientation[orientation][random.nextInt(0, 1)];
   }
 }
 

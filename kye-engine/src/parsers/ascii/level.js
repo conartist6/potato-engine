@@ -6,11 +6,12 @@ const FIRST_LAST_ROW = /[1-9]{3,}/;
 const ROW = /[1-9].+[1-9]/;
 
 export default class Level {
-  constructor(header, dimensions, board, index) {
+  constructor(header, dimensions, board, index = null, seed = null) {
     this.header = header;
     this.dimensions = dimensions;
     this.board = board;
     this.index = index;
+    this.seed = seed;
   }
 
   count(EntityClass) {
@@ -23,14 +24,15 @@ export default class Level {
 
   serialize() {
     const { code, hint, completionMessage } = this.header;
-    return [
-      code,
-      hint,
-      completionMessage,
-      ...this.board.map(line =>
+    return [code, hint, completionMessage, this.serializeBoard()].join('\n');
+  }
+
+  serializeBoard() {
+    return this.board
+      .map(line =>
         line
           .map(inst => {
-            const { symbol } = inst;
+            const symbol = inst ? inst.symbol : ' ';
             invariant(
               symbol,
               'Unable to serialize level. Most likely a timer has too low a count.',
@@ -38,12 +40,12 @@ export default class Level {
             return symbol;
           })
           .join(''),
-      ),
-    ].join('\n');
+      )
+      .join('\n');
   }
 
-  static parse(text, firstLine = 0, index = 0) {
-    const lines = typeof text === 'string' ? text.split('\n') : text;
+  static parse(text, firstLine = 0, campaign = null) {
+    const lines = typeof text === 'string' ? text.split(/\r?\n/) : text;
     const header = this._parseHeader(lines.slice(firstLine, LEVEL_HEADER_LINES + firstLine));
     const dimensions = this._findDimensions(lines, firstLine + LEVEL_HEADER_LINES);
     const board = this.parseBoard(
@@ -52,7 +54,7 @@ export default class Level {
         firstLine + LEVEL_HEADER_LINES + dimensions.height,
       ),
     );
-    return new Level(header, dimensions, board, index);
+    return new Level(header, dimensions, board, campaign);
   }
 
   static _parseHeader(headerLines) {
@@ -89,7 +91,12 @@ export default class Level {
     return lines.map(line =>
       line.split('').map(symbol => {
         const inst = symbol === ' ' ? null : entities.getBySymbol(symbol);
-        invariant(symbol === ' ' || inst, 'Level contained unkown symbol %s.', symbol);
+        invariant(
+          symbol === ' ' || inst,
+          'Level contained unkown symbol %s (dec %s).',
+          symbol,
+          symbol.charCodeAt(0),
+        );
         return inst;
       }),
     );

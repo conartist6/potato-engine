@@ -2,6 +2,7 @@ import { Seq } from 'immutable';
 import makeEmitter from 'event-emitter';
 import invariant from 'invariant';
 import allOff from 'event-emitter/all-off';
+import Prando from 'prando';
 
 import {
   aligned,
@@ -35,9 +36,22 @@ function findCoordsFor(board, cb) {
   );
 }
 
+const recordingDirectionSymbols = {
+  LEFT: 'l',
+  UP: 'u',
+  RIGHT: 'r',
+  DOWN: 'd',
+};
+
 export default class Board {
-  constructor(level, dimensions, getState = () => {}) {
+  constructor(level, dimensions, options) {
+    const getState = options.getState || (() => {});
     this.dimensions = dimensions;
+    if (options.record) {
+      this.recording = [];
+    }
+
+    this._random = new Prando(level.seed);
     this._board = this._cloneBoard(level.board);
     this._magnetization = this._board.map(row => row.map(symbol => 0));
     this._tickCounter = 0;
@@ -45,6 +59,8 @@ export default class Board {
     this._shoved = null;
     this._dryRun = null;
     this._paused = true;
+    this._emit = this.emit;
+    this.emit = undefined;
     const magnets = findCoordsFor(this._board, s => s instanceof entities.Magnet);
     for (const magnetCoords of magnets) {
       this._trackMagnetAt(magnetCoords);
@@ -52,17 +68,17 @@ export default class Board {
 
     this._entityApi = Object.freeze({
       getState,
-      ...Seq.Indexed([
-        'seek',
-        'shove',
-        'move',
-        'eat',
-        'at',
-        'setAt',
-        'emit',
-        'once',
-        'spiralSearch',
-      ])
+      random: this._random,
+      emit: (event, ...args) => {
+        switch (event) {
+          case 'progress':
+            return this._emit(event, args);
+          case 'win':
+            return this._emit(event, this.recording);
+        }
+        this._emit();
+      },
+      ...Seq.Indexed(['seek', 'shove', 'move', 'eat', 'at', 'setAt', 'once', 'spiralSearch'])
         .toSetSeq()
         .toMap()
         .map(method => this[method].bind(this))
@@ -93,7 +109,7 @@ export default class Board {
       this._setTickTimeout();
     });
     this._setTickTimeout();
-    this.emit('start');
+    this._emit('start');
   }
 
   setPaused(paused) {
@@ -107,7 +123,7 @@ export default class Board {
     allOff(this);
     this._paused = true;
     this._clearTickTimeout();
-    this.emit('end');
+    this._emit('end');
   }
 
   _setTickTimeout() {
@@ -156,8 +172,21 @@ export default class Board {
       this._entityCoords.splice(indexOfCoords, 1);
     });
     this._entitiesToDelete.length = 0;
+
     this._tickCounter = (this._tickCounter + 1) % 105;
-    this.emit('tick');
+    if (this.recording) {
+      if (playerDirection) {
+        this.recording.push(recordingDirectionSymbols[playerDirection]);
+      } else {
+        if (typeof this.recording[this.recording.length - 1] === 'number') {
+          this.recording[this.recording.length - 1]++;
+        } else {
+          this.recording.push(1);
+        }
+      }
+    }
+
+    this._emit('tick');
   }
 
   at(coords, direction = null, distance = 1) {
@@ -191,7 +220,7 @@ export default class Board {
     } else if (yDist > xDist) {
       direction = directionsByOrientation.VERTICAL[dy > 0 ? 0 : 1];
     } else {
-      direction = randomDirection();
+      direction = randomDirection(this._random);
     }
     this.move(coords, direction);
   }
@@ -221,7 +250,7 @@ export default class Board {
     if (!this._dryRun) {
       if (targetEntity instanceof entities.Player) {
         this.once('tick', () => {
-          this.emit('death');
+          this._emit('death');
         });
       } else {
         const snackCoordsIdx = this._findIndexOfCoordsAt(coords, direction);
@@ -291,7 +320,7 @@ export default class Board {
         : this.canMove(coords, direction2) && this.canMove(coords, rightOf(direction));
 
       if (canUse1 && canUse2) {
-        if (Math.min(2, Math.floor(Math.random() + 0.5))) {
+        if (this._random.nextBoolean()) {
           direction = direction1;
         } else {
           direction = direction2;

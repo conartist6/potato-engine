@@ -1,0 +1,33 @@
+{
+  "name": "kye-entities",
+  "version": "3.1.0",
+  "private": true,
+  "sideEffects": [
+    "./src/index.js"
+  ],
+  "libPackages": [
+    "kye-engine"
+  ],
+  "peerDependencies": {
+    "kye-engine": "3.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-check-es2015-constants": "^6.3.13",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "cross-env": "^5.1.4",
+    "rimraf": "^2.6.2"
+  },
+  "scripts": {
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir lib",
+    "build": "npm run build:es && renamer --regex --find '\\.js$' --replace '.mjs' 'lib/**' && npm run build:commonjs",
+    "clean": "rimraf lib es"
+  },
+  "dependencies": {
+    "renamer": "^0.6.1"
+  }
+}

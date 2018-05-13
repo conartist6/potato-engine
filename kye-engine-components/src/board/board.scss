@@ -1,0 +1,17 @@
+.board {
+  border-collapse: collapse;
+
+  td {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+
+    & > div {
+      width: 20px;
+      height: 20px;
+      overflow: hidden;
+    }
+  }
+}

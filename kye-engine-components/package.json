@@ -1,0 +1,48 @@
+{
+  "name": "kye-engine-components",
+  "version": "3.1.0",
+  "private": true,
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "dasherize": "^2.0.0",
+    "event-emitter": "^0.3.5",
+    "immutable": "^3.8.2",
+    "invariant": "^2.2.4",
+    "keycode-js": "^1.0.0",
+    "renamer": "^0.6.1"
+  },
+  "peerDependencies": {
+    "react": "^16.3.2",
+    "kye-engine": "^3.1.0"
+  },
+  "libPackages": ["kye-engine"],
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-check-es2015-constants": "^6.3.13",
+    "babel-plugin-syntax-jsx": "^6.3.13",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-react-display-name": "^6.4.0",
+    "babel-plugin-transform-react-jsx": "^6.4.0",
+    "copyfiles": "^2.0.0",
+    "cross-env": "^5.1.4",
+    "npm-watch": "^0.3.0",
+    "rimraf": "^2.6.2"
+  },
+  "sideEffects": ["*.css"],
+  "watch": {
+    "build": "src/*.js"
+  },
+  "scripts": {
+    "build:commonjs":
+      "cross-env BABEL_ENV=commonjs babel src --out-dir lib && cd src && copyfiles \"**/*.css\" ../lib && cd ..",
+    "build:es":
+      "cross-env BABEL_ENV=es babel src --out-dir lib && cd src && copyfiles \"**/*.css\" ../lib && cd ..",
+    "build":
+      "npm run build:es && renamer --regex --find '\\.js$' --replace '.mjs' 'lib/**' && npm run build:commonjs",
+    "watch": "npm-watch",
+    "clean": "rimraf lib es"
+  }
+}

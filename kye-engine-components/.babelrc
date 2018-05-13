@@ -1,0 +1,25 @@
+{
+  "plugins": [
+    "check-es2015-constants",
+    "transform-object-rest-spread",
+    "transform-react-display-name",
+    "transform-react-jsx",
+    "syntax-jsx"
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul",
+        ["transform-es2015-modules-commonjs", { "loose": true }]
+      ]
+    },
+    "commonjs": {
+      "plugins": [
+        ["transform-es2015-modules-commonjs", { "loose": true }]
+      ]
+    },
+    "es": {
+      "plugins": [],
+    }
+  }
+}

@@ -8,7 +8,7 @@ export default class Board extends PureComponent {
     this.setupBoard(this.props.board);
   }
   componentWillUnmount() {
-    this.teardownBoard();
+    this.teardownBoard(this.props.board);
   }
   componentDidUpdate(oldProps) {
     if (oldProps.board !== this.props.board) {

@@ -7,11 +7,12 @@ export default class Diamond extends Edible {
     this.twinkles = true;
   }
   react(board, coords, direction, entities) {
-    const eaten = board.at(coords, direction) !== this;
+    const eaten = board.at(coords) !== this;
     if (eaten) {
-      boad.once('tick', () => {
+      board.once('tick', () => {
         board.emit('progress', this);
         if (board.getState().diamondsLeft === 0) {
+          debugger;
           board.emit('win');
         }
       });

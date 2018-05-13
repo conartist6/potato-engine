@@ -1,5 +1,5 @@
-import Interactor from 'kye-engine/entities/interactor';
-import range from 'lodash-es/range';
+import Interactor from 'kye-engine/lib/entities/interactor';
+import range from 'lodash/range';
 
 export default class BlackHole extends Interactor {
   constructor(fullFor) {

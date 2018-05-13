@@ -1,6 +1,6 @@
-import Thinker from 'kye-engine/entities/thinker';
+import Interactor from 'kye-engine/lib/entities/interactor';
 
-import { randomDirection } from 'kye-engine/directions';
+import { randomDirection } from 'kye-engine/lib/directions';
 
 const monsterTypes = {
   GNASHER: 'E',
@@ -10,7 +10,7 @@ const monsterTypes = {
   BLOB: 'C',
 };
 
-export default class Monster extends Thinker {
+export default class Monster extends Interactor {
   constructor(type) {
     super();
     this.type = type;

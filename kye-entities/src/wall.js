@@ -1,5 +1,5 @@
-import Base from 'kye-engine/entities/base';
-import range from 'lodash-es/range';
+import Base from 'kye-engine/lib/entities/base';
+import range from 'lodash/range';
 
 export default class Wall extends Base {
   constructor(roundness) {

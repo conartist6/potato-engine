@@ -1,4 +1,4 @@
-import Thinker from 'kye-engine/entities/thinker';
+import Thinker from 'kye-engine/lib/entities/thinker';
 
 export default class Shooter extends Thinker {
   constructor() {

@@ -15,7 +15,7 @@ import Timer from './timer';
 import Turner from './turner';
 import Wall from './wall';
 
-import { entities } from 'kye-engine';
+import entities from 'kye-engine/lib/entities';
 
 [
   BlackHole,

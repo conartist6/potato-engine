@@ -1,6 +1,6 @@
-import Base from 'kye-engine/entities/base';
+import Base from 'kye-engine/lib/entities/base';
 
-import directions from 'kye-engine/directions';
+import directions from 'kye-engine/lib/directions';
 
 const symbolsByDirection = {
   UP: 'i',

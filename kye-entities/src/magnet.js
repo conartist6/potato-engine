@@ -1,6 +1,6 @@
-import MagnetBase from 'kye-engine/entities/magnet';
+import MagnetBase from 'kye-engine/lib/entities/magnet';
 
-import { orientations } from 'kye-engine/directions';
+import { orientations } from 'kye-engine/lib/directions';
 
 const symbolsByOrientation = {
   HORIZONTAL: 'S',

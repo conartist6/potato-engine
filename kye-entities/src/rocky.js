@@ -1,6 +1,6 @@
 import Slider from './slider';
 
-import directions from 'kye-engine/directions';
+import directions from 'kye-engine/lib/directions';
 
 const symbolsByDirection = {
   UP: '^',

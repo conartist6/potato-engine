@@ -1,4 +1,4 @@
-import Base from 'kye-engine/entities/base';
+import Base from 'kye-engine/lib/entities/base';
 
 export default class Block extends Base {
   constructor(isRound) {

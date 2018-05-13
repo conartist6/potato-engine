@@ -1,4 +1,4 @@
-import Interactor from 'kye-engine/entities/interactor';
+import Interactor from 'kye-engine/lib/entities/interactor';
 
 export default class Edible extends Interactor {
   constructor() {

@@ -1,6 +1,6 @@
-import Thinker from 'kye-engine/entities/thinker';
+import Thinker from 'kye-engine/lib/entities/thinker';
 
-import directions, { flip } from 'kye-engine/directions';
+import directions, { flip } from 'kye-engine/lib/directions';
 
 const symbolsByDirection = {
   LEFT: 'L',

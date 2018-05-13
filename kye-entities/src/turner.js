@@ -1,6 +1,6 @@
-import Interactor from 'kye-engine/entities/interactor';
+import Interactor from 'kye-engine/lib/entities/interactor';
 
-import { rightOf, leftOf } from 'kye-engine/directions';
+import { rightOf, leftOf } from 'kye-engine/lib/directions';
 
 const symbolsByTurner = {
   CLOCKWISE: 'a',

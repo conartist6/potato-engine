@@ -1,5 +1,5 @@
-import Thinker from 'kye-engine/entities/thinker';
-import range from 'lodash-es/range';
+import Thinker from 'kye-engine/lib/entities/thinker';
+import range from 'lodash/range';
 
 const timers = ['}', '|', '{', 'z', 'y', 'x', 'w'];
 

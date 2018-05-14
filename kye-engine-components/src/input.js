@@ -14,19 +14,39 @@ const keysToDirections = {
 };
 
 export default class Input {
+  constructor(getMode) {
+    this._getMode = getMode;
+  }
   keydown(event) {
-    const direction = keysToDirections[event.keyCode];
-    if (direction) {
-      this.emit('input', direction);
+    const mode = this._getMode();
+    if (mode === 'game') {
+      const direction = keysToDirections[event.keyCode];
+      if (direction) {
+        this.emit('move', direction);
+      }
+      switch (event.keyCode) {
+        case c.KEY_P:
+          this.emit('pause-unpause');
+          break;
+        case c.KEY_R:
+          this.emit('reset');
+          break;
+        case c.KEY_G:
+          this.emit('goto');
+          event.preventDefault();
+          break;
+      }
+    } else if (mode === 'dialog') {
+      if (/[a-zA-Z]/.test(event.keyCode)) {
+        this.emit('input', event.keyCode);
+      }
+      if (event.keyCode === c.KEY_ESCAPE) {
+        this.emit('cancel-goto');
+      }
     }
-    switch (event.keyCode) {
-      case c.KEY_P:
-        this.emit('pause-unpause');
-        break;
-      case c.KEY_R:
-        this.emit('reset');
-        break;
-    }
+  }
+  setMode(mode) {
+    this._mode = mode;
   }
   start(event, listener) {
     this._listener = e => this.keydown(e);

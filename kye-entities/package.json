@@ -1,10 +1,10 @@
 {
   "name": "kye-entities",
-  "version": "3.1.0-alpha.1",
+  "version": "3.1.0-alpha.2",
   "license": "MIT",
   "sideEffects": ["./src/index.js"],
   "peerDependencies": {
-    "kye-engine": "3.1.0-alpha.1"
+    "kye-engine": "3.1.0-alpha.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

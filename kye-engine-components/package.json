@@ -1,7 +1,6 @@
 {
   "name": "kye-engine-components",
-  "version": "3.1.0",
-  "private": true,
+  "version": "3.1.0-alpha.1",
   "dependencies": {
     "classnames": "^2.2.5",
     "dasherize": "^2.0.0",
@@ -13,7 +12,7 @@
   },
   "peerDependencies": {
     "react": "^16.3.2",
-    "kye-engine": "^3.1.0"
+    "kye-engine": "3.1.0-alpha.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -37,6 +36,10 @@
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish2    ": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conartist6/kye/tree/master/kye-engine-components"
   }
 }

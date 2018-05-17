@@ -1,10 +1,9 @@
 {
   "name": "kye-entities",
-  "version": "3.1.0",
-  "private": true,
+  "version": "3.1.0-alpha.1",
   "sideEffects": ["./src/index.js"],
   "peerDependencies": {
-    "kye-engine": "3.1.0"
+    "kye-engine": "3.1.0-alpha.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -24,6 +23,10 @@
     "build": "broccoli build lib",
     "clean": "rimraf lib",
     "prepublish": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conartist6/kye/tree/master/kye-entities"
   },
   "main": "lib/index",
   "module": "lib/index"

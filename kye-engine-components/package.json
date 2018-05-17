@@ -1,6 +1,7 @@
 {
   "name": "kye-engine-components",
   "version": "3.1.0-alpha.1",
+  "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
     "dasherize": "^2.0.0",

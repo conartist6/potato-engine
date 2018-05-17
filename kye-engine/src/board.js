@@ -2,6 +2,7 @@ import { Seq } from 'immutable';
 import makeEmitter from 'event-emitter';
 import invariant from 'invariant';
 import allOff from 'event-emitter/all-off';
+import range from 'lodash/range';
 import Prando from 'prando';
 
 import {
@@ -52,7 +53,12 @@ export default class Board {
     }
 
     this._random = new Prando(level.seed);
+
     this._board = this._cloneBoard(level.board);
+    this._filterBoard(this._board, entity => !(entity instanceof entities.Field));
+    this._fields = this._cloneBoard(level.board);
+    this._filterBoard(this._fields, entity => entity instanceof entities.Field);
+
     this._magnetization = this._board.map(row => row.map(symbol => 0));
     this._tickCounter = 0;
     this._ate = null;
@@ -96,11 +102,16 @@ export default class Board {
       playerCoords,
       ...findCoordsFor(
         this._board,
-        s => s != null && !(s instanceof entities.Player) && !(s instanceof entities.Wall),
+        s =>
+          s != null &&
+          !(s instanceof entities.Player) &&
+          !(s instanceof entities.Wall && !(s instanceof entities.Field)),
       ),
     ];
-
     this._entitiesToDelete = [];
+    this._iteratorObjects = range(this.dimensions.width * this.dimensions.height).map(i =>
+      this._initializeIteratorObject({}),
+    );
   }
 
   start(event, listener) {
@@ -190,7 +201,9 @@ export default class Board {
   }
 
   at(coords, direction = null, distance = 1) {
-    return at(this._board, coords, direction, distance);
+    return (
+      at(this._board, coords, direction, distance) || at(this._fields, coords, direction, distance)
+    );
   }
 
   setAt(coords, newEntity, direction = null, distance = 1) {
@@ -299,7 +312,8 @@ export default class Board {
     }
 
     this._dryRun = null;
-    return !moveCanceled && newTargetEntity === null;
+    const shouldMove = !moveCanceled && (newTargetEntity === null || newTargetEntity.pathable);
+    return shouldMove;
   }
 
   _deflect(coords, direction) {
@@ -417,6 +431,15 @@ export default class Board {
   _cloneBoard(board) {
     return board.map(row => [...row]);
   }
+  _filterBoard(board, predicate) {
+    for (const row of board) {
+      for (let i = 0; i < row.length; i++) {
+        if (!predicate(row[i])) {
+          row[i] = null;
+        }
+      }
+    }
+  }
 
   _findIndexOfCoordsAt(coords, direction = null, distance = 1) {
     const deltaCoords = directionsAsDeltaCoords[direction];
@@ -474,20 +497,31 @@ export default class Board {
     }
   }
 
-  *_colIterator(rowIdx) {
-    const row = this._board[rowIdx];
-    for (let i = 0; i < this.dimensions.width; i++) {
-      yield row && row[i];
-    }
-  }
-  *_rowIterator() {
-    for (let i = 0; i < this.dimensions.height; i++) {
-      yield this._colIterator(i);
-    }
+  _initializeIteratorObject(obj) {
+    obj.x = null;
+    obj.y = null;
+    obj.entity = null;
+    obj.field = null;
+    obj.key = null;
+    return obj;
   }
 
-  [Symbol.iterator]() {
-    return this._rowIterator();
+  *[Symbol.iterator]() {
+    const iteratorObjects = this._iteratorObjects;
+    const { width } = this.dimensions;
+    iteratorObjects.forEach(obj => this._initializeIteratorObject(obj));
+
+    for (let row = 0; row < this.dimensions.height; row++) {
+      for (let col = 0; col < this.dimensions.width; col++) {
+        const obj = iteratorObjects[row * width + col];
+        obj.x = col;
+        obj.y = row;
+        obj.entity = this._board[row][col];
+        obj.field = this._fields[row][col];
+
+        yield obj;
+      }
+    }
   }
 }
 makeEmitter(Board.prototype);

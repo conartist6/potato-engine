@@ -1,4 +1,4 @@
-import Base from 'kye-engine/lib/entities/base';
+import Field from 'kye-engine/lib/entities/field';
 
 import directions from 'kye-engine/lib/directions';
 
@@ -9,7 +9,7 @@ const symbolsByDirection = {
   RIGHT: 'f',
 };
 
-export default class OneWay extends Base {
+export default class OneWay extends Field {
   constructor(direction) {
     super();
     this.direction = direction;

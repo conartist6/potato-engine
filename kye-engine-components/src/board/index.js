@@ -22,31 +22,45 @@ export default class Board extends PureComponent {
   teardownBoard(board) {
     board.end();
   }
+
+  *[Symbol.iterator]() {
+    const { board } = this.props;
+    const { height, width } = board.dimensions;
+    let i = 0;
+    for (const { x, y, entity, field } of board) {
+      let element = entity && <Entity entity={entity} />;
+      if (this.props.entityWrapper) {
+        const Wrapper = this.props.entityWrapper;
+        element = entity && <Wrapper>{element}</Wrapper>;
+      }
+      yield (
+        <div
+          className="cell"
+          key={i}
+          data-x={x}
+          data-y={y}
+          // This sucks but using a single iterator has constraints and advantages.
+          // Ideally css calc could be used with css attr, and this would be unneccesary.
+          style={{ position: 'absolute', top: `${y * 20}px`, left: `${x * 20}px` }}
+        >
+          {element}
+        </div>
+      );
+      i++;
+    }
+  }
+
   render() {
     const { board } = this.props;
+    const { height, width } = board.dimensions;
     if (!board) {
       return null;
     }
 
-    const rows = Array.from(board, (row, rIdx) => {
-      const entities = Array.from(row, (entity, cIdx) => {
-        let element = entity && <Entity entity={entity} />;
-        if (this.props.entityWrapper) {
-          const Wrapper = this.props.entityWrapper;
-          element = entity && <Wrapper>{element}</Wrapper>;
-        }
-        return (
-          <td key={cIdx} data-x={cIdx} data-y={rIdx}>
-            {element}
-          </td>
-        );
-      });
-      return <tr key={rIdx}>{entities}</tr>;
-    });
     return (
-      <table className="board">
-        <tbody>{rows}</tbody>
-      </table>
+      <div className="board" style={{ height: `${height * 20}px`, width: `${width * 20}px` }}>
+        {this}
+      </div>
     );
   }
 }

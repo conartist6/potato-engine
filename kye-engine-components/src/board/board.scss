@@ -2,37 +2,36 @@ $border-radius: 7px;
 
 .board {
   border-collapse: collapse;
+  position: relative;
 
-  tr {
-    &:first-child > td {
-      &:first-child .wall {
-        border-top-left-radius: $border-radius;
-      }
-      &:last-child .wall {
-        border-top-right-radius: $border-radius;
-      }
-    }
-    &:last-child > td {
-      &:first-child .wall {
-        border-bottom-left-radius: $border-radius;
-      }
-      &:last-child .wall {
-        border-bottom-right-radius: $border-radius;
-      }
-    }
-  }
+  // tr {
+  //   &:first-child > td {
+  //     &:first-child .wall {
+  //       border-top-left-radius: $border-radius;
+  //     }
+  //     &:last-child .wall {
+  //       border-top-right-radius: $border-radius;
+  //     }
+  //   }
+  //   &:last-child > td {
+  //     &:first-child .wall {
+  //       border-bottom-left-radius: $border-radius;
+  //     }
+  //     &:last-child .wall {
+  //       border-bottom-right-radius: $border-radius;
+  //     }
+  //   }
+  // }
 
-  td {
+  .cell {
     margin: 0;
     padding: 0;
     overflow: hidden;
     text-align: center;
-    position: relative;
-
-    & > div {
-      width: 20px;
-      height: 20px;
-      overflow: hidden;
-    }
+    position: absolute;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
   }
 }

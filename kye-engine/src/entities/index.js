@@ -1,5 +1,6 @@
 import { Map, Seq } from 'immutable';
 
+import Field from './field';
 import Interactor from './interactor';
 import Player from './player';
 import Thinker from './thinker';
@@ -36,7 +37,7 @@ export class EntityStore {
     this._instances = {};
     this._instancesBySymbol = {};
     this.entities = new global.Map();
-    [Interactor, Player, Thinker, Magnet].map(EntityType => this.addEntityType(EntityType));
+    [Field, Interactor, Player, Thinker, Magnet].map(EntityType => this.addEntityType(EntityType));
   }
 }
 

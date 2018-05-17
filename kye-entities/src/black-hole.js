@@ -1,14 +1,14 @@
-import Interactor from 'kye-engine/lib/entities/interactor';
+import Field from 'kye-engine/lib/entities/field';
 import range from 'lodash/range';
 
-export default class BlackHole extends Interactor {
+export default class BlackHole extends Field {
   constructor(fullFor) {
     super();
     this.symbol = 'H';
     this.frequency = 5;
     this.fullFor = fullFor; // Black holes need to digest
     this.pathable = fullFor === 0;
-    this.pushable = fullFor > 0;
+    this.pushable = fullFor === 1;
   }
 
   get pullable() {

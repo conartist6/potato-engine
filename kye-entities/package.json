@@ -2,12 +2,7 @@
   "name": "kye-entities",
   "version": "3.1.0",
   "private": true,
-  "sideEffects": [
-    "./src/index.js"
-  ],
-  "libPackages": [
-    "kye-engine"
-  ],
+  "sideEffects": ["./src/index.js"],
   "peerDependencies": {
     "kye-engine": "3.1.0"
   },

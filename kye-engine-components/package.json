@@ -15,9 +15,6 @@
     "react": "^16.3.2",
     "kye-engine": "^3.1.0"
   },
-  "libPackages": [
-    "kye-engine"
-  ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -36,9 +33,7 @@
     "broccoli-sass-modular": "^1.0.0",
     "rimraf": "^2.6.2"
   },
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": ["*.css"],
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib"

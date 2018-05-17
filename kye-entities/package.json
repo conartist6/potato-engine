@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "broccoli build lib",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "prepublish": "npm run clean && npm run build"
   },
   "main": "lib/index",
   "module": "lib/index"

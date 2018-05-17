@@ -11,6 +11,7 @@
 
 # production
 /*/lib
+/*/tmp
 
 # misc
 .DS_Store

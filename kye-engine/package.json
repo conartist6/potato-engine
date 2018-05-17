@@ -15,19 +15,17 @@
     "babel-plugin-check-es2015-constants": "^6.3.13",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "cross-env": "^5.1.4",
-    "npm-watch": "^0.3.0",
-    "rimraf": "^2.6.2",
-    "renamer": "^0.6.1"
+    "broccoli": "^1.1.4",
+    "broccoli-funnel": "^2.0.1",
+    "broccoli-merge-trees": "^3.0.0",
+    "broccoli-babel-transpiler": "^6.1.4",
+    "rimraf": "^2.6.2"
   },
   "watch": {
     "build": "src/*.js"
   },
   "scripts": {
-    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
-    "build:es": "cross-env BABEL_ENV=es babel src --out-dir lib",
-    "build": "npm run build:es && renamer --regex --find '\\.js$' --replace '.mjs' 'lib/**' && npm run build:commonjs",
-    "watch": "npm-watch",
-    "clean": "rimraf lib es"
+    "build": "broccoli build lib",
+    "clean": "rimraf lib"
   }
 }

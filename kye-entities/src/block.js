@@ -1,26 +1,14 @@
 import Base from 'kye-engine/lib/entities/base';
+import { Map } from 'immutable';
 
 export default class Block extends Base {
-  constructor(isRound) {
-    super();
-    this.isRound = isRound;
-    this.frequency = 1;
-  }
-
-  get symbol() {
-    return this.isRound ? 'B' : 'b';
+  get isRound() {
+    return this.attribute;
   }
 
   get roundness() {
-    return this.isRound ? 0 : 5;
-  }
-
-  get attribute() {
-    return this.isRound ? 'ROUND' : 'SQUARE';
-  }
-
-  static validParams() {
-    return [true, false];
+    return this.attribute === 'ROUND' ? 0 : 5;
   }
 }
+Block.attributesBySymbol = Map({ B: 'ROUND', b: 'SQUARE' });
 Block.__name = 'Block'; // uglify killin' me

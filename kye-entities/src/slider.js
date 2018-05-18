@@ -1,35 +1,16 @@
 import Thinker from 'kye-engine/lib/entities/thinker';
+import { Map } from 'immutable';
 
 import directions from 'kye-engine/lib/directions';
 
-const symbolsByDirection = {
-  UP: 'u',
-  DOWN: 'd',
-  LEFT: 'l',
-  RIGHT: 'r',
-};
-
 export default class Slider extends Thinker {
-  constructor(direction) {
-    super();
-    this.direction = direction;
-    this.frequency = 1;
-  }
-
-  get attribute() {
-    return this.direction;
+  get direction() {
+    return this.attribute;
   }
 
   think(board, coords) {
     board.move(coords, this.direction);
   }
-
-  get symbol() {
-    return symbolsByDirection[this.direction];
-  }
-
-  static validParams() {
-    return directions;
-  }
 }
+Slider.attributesBySymbol = Map({ u: 'UP', d: 'DOWN', l: 'LEFT', r: 'RIGHT' });
 Slider.__name = 'Slider'; // uglify killin' me

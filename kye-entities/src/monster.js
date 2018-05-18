@@ -1,21 +1,14 @@
 import Interactor from 'kye-engine/lib/entities/interactor';
-
+import { Map } from 'immutable';
 import { randomDirection } from 'kye-engine/lib/directions';
 
-const monsterTypes = {
-  GNASHER: 'E',
-  TWISTER: 'T',
-  SPIKE: '[',
-  SNAKE: '~',
-  BLOB: 'C',
-};
-
 export default class Monster extends Interactor {
-  constructor(type) {
-    super();
-    this.type = type;
-    this.frequency = 3;
-    this.opportunistic = true;
+  get frequency() {
+    return 3;
+  }
+
+  get opportunistic() {
+    return true;
   }
 
   think(board, coords) {
@@ -41,12 +34,15 @@ export default class Monster extends Interactor {
     this.eatPlayers(...arguments);
   }
 
-  get symbol() {
-    return monsterTypes[this.type];
-  }
-
-  static validParams() {
-    return Object.keys(monsterTypes);
+  get type() {
+    return this.attribute;
   }
 }
+Monster.attributesBySymbol = Map({
+  E: 'GNASHER',
+  T: 'TWISTER',
+  '[': 'SPIKE',
+  '~': 'SNAKE',
+  C: 'BLOB',
+});
 Monster.__name = 'Monster'; // uglify killin' me

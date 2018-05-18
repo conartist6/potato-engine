@@ -14,6 +14,7 @@ import Slider from './slider';
 import Timer from './timer';
 import Turner from './turner';
 import Wall from './wall';
+import WhiteHole from './white-hole';
 
 import entities from 'kye-engine/lib/entities';
 
@@ -34,6 +35,7 @@ import entities from 'kye-engine/lib/entities';
   Timer,
   Turner,
   Wall,
+  WhiteHole,
 ].forEach(EntityType => entities.addEntityType(EntityType));
 
 export default entities;

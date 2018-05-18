@@ -1,16 +1,10 @@
 import Base from 'kye-engine/lib/entities/base';
+import { Set } from 'immutable';
 import range from 'lodash/range';
 
 export default class Wall extends Base {
-  constructor(roundness) {
-    super();
-    this._roundness = roundness;
-    this.isStatic = true;
-    this.pushable = false;
-  }
-
-  get attribute() {
-    return this._roundness;
+  isStatic() {
+    return true;
   }
 
   get symbol() {
@@ -18,11 +12,10 @@ export default class Wall extends Base {
   }
 
   get roundness() {
-    return this._roundness;
-  }
-
-  static validParams() {
-    return range(1, 10);
+    return this.attribute;
   }
 }
+Wall.attributesBySymbol = Set(range(10))
+  .map(num => String(num))
+  .toMap();
 Wall.__name = 'Wall'; // uglify killin' me

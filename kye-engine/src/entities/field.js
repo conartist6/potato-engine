@@ -5,15 +5,8 @@ import Base from './base';
  * which other objects can exist on top of.
  **/
 export default class Field extends Base {
-  constructor() {
-    super();
-    this.frequency = 0;
-    this.pathable = true;
-    this.pushable = false;
-  }
-
-  get roundness() {
-    return 5;
+  constructor(attribute) {
+    super(attribute);
   }
 }
 Field.__name = 'Field'; // uglify killin' me

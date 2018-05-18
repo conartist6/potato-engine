@@ -1,10 +1,9 @@
 import Interactor from 'kye-engine/lib/entities/interactor';
+import { Map } from 'immutable';
 
 export default class Player extends Interactor {
-  constructor() {
-    super();
-    this.symbol = 'K';
-    this.pushable = false;
+  get pushable() {
+    return false;
   }
 
   interact(board, coords, direction, entities) {
@@ -16,4 +15,5 @@ export default class Player extends Interactor {
     }
   }
 }
+Player.attributesBySymbol = Map({ K: null });
 Player.__name = 'Player'; // uglify killin' me

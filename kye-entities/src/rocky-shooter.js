@@ -1,11 +1,8 @@
 import Shooter from './shooter';
+import { Map } from 'immutable';
 
 export default class RockyShooter extends Shooter {
-  constructor() {
-    super();
-    this.symbol = 'F';
-  }
-
   think() {}
 }
+RockyShooter.attributesBySymbol = Map({ F: null });
 RockyShooter.__name = 'RockyShooter'; // uglify killin' me

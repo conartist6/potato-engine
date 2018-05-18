@@ -1,10 +1,21 @@
 import Interactor from './interactor';
 
 export default class Thinker extends Interactor {
-  constructor() {
-    super();
-    this.frequency = 1;
+  constructor(attribute) {
+    super(attribute);
   }
+
+  get frequency() {
+    return 1;
+  }
+
+  /**
+   * An opportunistic thinker gets to make a move if the player makes one.
+   */
+  get opportunistic() {
+    return false;
+  }
+
   /**
    * Thinkers get to call their think method every `frequency` game ticks.
    * Thinkers get to think in the right to left, top to bottom order that they

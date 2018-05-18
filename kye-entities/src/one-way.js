@@ -1,28 +1,10 @@
 import Field from 'kye-engine/lib/entities/field';
-
-import directions from 'kye-engine/lib/directions';
-
-const symbolsByDirection = {
-  UP: 'i',
-  DOWN: 'h',
-  LEFT: 'g',
-  RIGHT: 'f',
-};
+import { Map } from 'immutable';
 
 export default class OneWay extends Field {
-  constructor(direction) {
-    super();
-    this.direction = direction;
-    this.pathable = true;
-    this.pushable = false;
-  }
-
-  get symbol() {
-    return symbolsByDirection[this.direction];
-  }
-
-  static validParams() {
-    return directions;
+  get direction() {
+    return this.attribute;
   }
 }
+OneWay.attributesBySymbol = Map({ g: 'LEFT', i: 'UP', f: 'RIGHT', h: 'DOWN' });
 OneWay.__name = 'OneWay'; // uglify killin' me

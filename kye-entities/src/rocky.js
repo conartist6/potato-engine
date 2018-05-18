@@ -1,25 +1,12 @@
 import Slider from './slider';
+import { Map } from 'immutable';
 
 import directions from 'kye-engine/lib/directions';
-
-const symbolsByDirection = {
-  UP: '^',
-  DOWN: 'v',
-  LEFT: '<',
-  RIGHT: '>',
-};
 
 export default class Rocky extends Slider {
   get roundness() {
     return 0;
   }
-
-  get symbol() {
-    return symbolsByDirection[this.direction];
-  }
-
-  static validParams() {
-    return directions;
-  }
 }
+Rocky.attributesBySymbol = Map({ '<': 'LEFT', '^': 'UP', '>': 'RIGHT', v: 'DOWN' });
 Rocky.__name = 'Rocky'; // uglify killin' me

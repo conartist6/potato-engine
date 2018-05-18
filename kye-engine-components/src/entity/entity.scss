@@ -44,6 +44,13 @@ $border-radius: 7px;
       left: 3px;
     }
 
+    &.a_0 {
+      border-bottom-left-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+      border-top-left-radius: $border-radius;
+      border-top-right-radius: $border-radius;
+    }
+
     &.a_1 {
       border-bottom-left-radius: $border-radius;
     }

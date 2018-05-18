@@ -1,28 +1,18 @@
 import MagnetBase from 'kye-engine/lib/entities/magnet';
-
-import { orientations } from 'kye-engine/lib/directions';
-
-const symbolsByOrientation = {
-  HORIZONTAL: 'S',
-  VERTICAL: 's',
-};
+import { Map } from 'immutable';
 
 export default class Magnet extends MagnetBase {
   constructor(orientation) {
     super(orientation);
-    this.frequency = 1;
   }
 
-  get symbol() {
-    return symbolsByOrientation[this.orientation];
+  get frequency() {
+    return 1;
   }
 
-  get attribute() {
-    return this.orientation;
-  }
-
-  static validParams() {
-    return orientations;
+  get orientation() {
+    return this.attribute;
   }
 }
+Magnet.attributesBySymbol = Map({ S: 'HORIZONTAL', s: 'VERTICAL' });
 Magnet.__name = 'Magnet'; // uglify killin' me

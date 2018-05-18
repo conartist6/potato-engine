@@ -1,21 +1,8 @@
 import Thinker from 'kye-engine/lib/entities/thinker';
-
+import { Map } from 'immutable';
 import directions, { flip } from 'kye-engine/lib/directions';
 
-const symbolsByDirection = {
-  LEFT: 'L',
-  UP: 'U',
-  RIGHT: 'R',
-  DOWN: 'D',
-};
-
 export default class Sentry extends Thinker {
-  constructor(direction) {
-    super();
-    this.direction = direction;
-    this.frequency = 5;
-  }
-
   think(board, coords) {
     board.move(coords, this.direction);
   }
@@ -23,20 +10,17 @@ export default class Sentry extends Thinker {
   interact(board, coords, direction, entities) {
     const targetEntity = board.at(coords, direction);
     const shoved = targetEntity.pushable && board.shove(coords, direction);
-    board.setAt(coords, entities.get('Sentry', flip(this.direction)));
+    board.setAt(coords, new entities.Sentry(flip(this.direction)));
     return shoved;
   }
 
-  get attribute() {
-    return this.direction;
+  get frequency() {
+    return 5;
   }
 
-  get symbol() {
-    return symbolsByDirection[this.direction];
-  }
-
-  static validParams() {
-    return directions;
+  get direction() {
+    return this.attribute;
   }
 }
+Sentry.attributesBySymbol = Map({ U: 'UP', D: 'DOWN', L: 'LEFT', R: 'RIGHT' });
 Sentry.__name = 'Sentry'; // uglify killin' me

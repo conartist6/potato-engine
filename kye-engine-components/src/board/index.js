@@ -26,27 +26,19 @@ export default class Board extends PureComponent {
   *[Symbol.iterator]() {
     const { board } = this.props;
     const { height, width } = board.dimensions;
-    let i = 0;
+
     for (const { x, y, entity, field } of board) {
-      let element = entity && <Entity entity={entity} />;
+      const key = entity && entity.state.key;
+      let element = entity && <Entity entity={entity} x={x} y={y} key={key} />;
       if (this.props.entityWrapper) {
         const Wrapper = this.props.entityWrapper;
-        element = entity && <Wrapper>{element}</Wrapper>;
+        element = entity && (
+          <Wrapper entity={entity} x={x} y={y} key={key}>
+            {element}
+          </Wrapper>
+        );
       }
-      yield (
-        <div
-          className="cell"
-          key={i}
-          data-x={x}
-          data-y={y}
-          // This sucks but using a single iterator has constraints and advantages.
-          // Ideally css calc could be used with css attr, and this would be unneccesary.
-          style={{ position: 'absolute', top: `${y * 20}px`, left: `${x * 20}px` }}
-        >
-          {element}
-        </div>
-      );
-      i++;
+      yield element;
     }
   }
 

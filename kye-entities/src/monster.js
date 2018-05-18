@@ -11,18 +11,18 @@ export default class Monster extends Interactor {
     return true;
   }
 
-  think(board, coords) {
+  think(board) {
+    const { coords } = this;
     if (board.random.nextBoolean()) {
-      board.seek(coords);
+      board.seek(this);
     } else {
-      board.move(coords, randomDirection(board.random));
+      board.move(this, randomDirection(board.random));
     }
   }
 
-  eatPlayers(board, coords, direction, entities) {
-    const targetEntity = board.at(coords, direction);
-    if (targetEntity instanceof entities.Player) {
-      board.eat(coords, direction);
+  eatPlayers(board, direction, entities) {
+    if (board.at(this.coords, direction) instanceof entities.Player) {
+      this.eat(direction);
     }
   }
 

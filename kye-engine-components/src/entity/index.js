@@ -32,11 +32,16 @@ export default class Entity extends Component {
       this.twinkling = !this.twinkling;
       return true;
     }
-    return this.props.entity !== nextProps.entity;
+
+    return (
+      this.props.entity !== nextProps.entity ||
+      this.props.x !== nextProps.x ||
+      this.props.y !== nextProps.y
+    );
   }
 
   render() {
-    const { entity } = this.props;
+    const { entity, x, y } = this.props;
     const attribute = entity.attribute && `a_${dasherize(entity.attribute)}`;
     const name = dasherize(entity.constructor.__name);
 
@@ -47,8 +52,17 @@ export default class Entity extends Component {
     }
 
     return (
-      <div className={cx(classNames)}>
-        {styledEntities.has(entity.constructor) ? null : entity.symbol}
+      <div
+        className="cell"
+        data-x={x}
+        data-y={y}
+        // This sucks but using a single iterator has constraints and advantages.
+        // Ideally css calc could be used with css attr, and this would be unneccesary.
+        style={{ position: 'absolute', top: `${y * 20}px`, left: `${x * 20}px` }}
+      >
+        <div className={cx(classNames)}>
+          {styledEntities.has(entity.constructor) ? null : entity.symbol}
+        </div>
       </div>
     );
   }

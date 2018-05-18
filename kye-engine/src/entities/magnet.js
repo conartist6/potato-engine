@@ -1,10 +1,6 @@
 import Thinker from './thinker';
 
 export default class Magnet extends Thinker {
-  constructor(orientation) {
-    super(orientation);
-  }
-
   get orientation() {
     return this.attribute;
   }

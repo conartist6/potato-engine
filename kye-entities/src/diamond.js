@@ -2,15 +2,12 @@ import Edible from './edible';
 import { Map } from 'immutable';
 
 export default class Diamond extends Edible {
-  constructor(attribute) {
-    super(attribute);
-  }
-
   get twinkles() {
     return true;
   }
 
-  react(board, coords, direction, entities) {
+  react(board, direction, entities) {
+    const { coords } = this;
     const eaten = board.at(coords) !== this;
     if (eaten) {
       board.once('tick', () => {

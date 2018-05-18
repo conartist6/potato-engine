@@ -5,15 +5,17 @@ import range from 'lodash/range';
  * A white hole is not a new entity type, it is merely a black hole which is digesting.
  **/
 export default class WhiteHole extends Thinker {
-  constructor(attribute) {
-    super(attribute);
+  constructor() {
+    super(...arguments);
     this.fullFor = 4;
   }
 
-  think(board, coords, entities) {
+  think(board, entities) {
+    const { coords } = this;
     this.fullFor--;
     if (this.fullFor === 0) {
-      board.setAt(coords, new entities.BlackHole());
+      const { BlackHole } = entities;
+      board.replace(this, new BlackHole(this.coords));
     }
   }
 

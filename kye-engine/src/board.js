@@ -4,6 +4,7 @@ import invariant from 'invariant';
 import allOff from 'event-emitter/all-off';
 import range from 'lodash/range';
 import Prando from 'prando';
+import EntityList from './entity-list';
 
 import {
   aligned,
@@ -11,26 +12,23 @@ import {
   setAt,
   inBoard,
   copyCoords,
-  coordsAreEqual,
   directions,
   getDeflections,
   directionsByOrientation,
-  directionsAsDeltaCoords,
   leftOf,
   rightOf,
   flip,
-  getCoordsInDirection,
   moveCoordsInDirection,
   randomDirection,
 } from './directions';
 
 import entities from './entities';
 
-function findCoordsFor(board, cb) {
+function findEntities(board, cb) {
   return board.reduce(
     (entities, row, y) =>
-      row.reduce((entities, symbol, x) => {
-        cb(symbol) && entities.push([x, y]);
+      row.reduce((entities, entity, x) => {
+        cb(entity) && entities.push(entity);
         return entities;
       }, entities),
     [],
@@ -54,12 +52,57 @@ export default class Board {
 
     this._random = new Prando(level.seed);
 
-    this._board = this._cloneBoard(level.board);
-    this._filterBoard(this._board, entity => !(entity instanceof entities.Field));
-    this._fields = this._cloneBoard(level.board);
-    this._filterBoard(this._fields, entity => entity instanceof entities.Field);
+    this._entityApi = Object.freeze({
+      getState,
+      random: this._random,
+      emit: () => this._reemit,
+      ...Seq.Indexed([
+        'seek',
+        'shove',
+        'move',
+        'eat',
+        'replace',
+        'at',
+        'setAt',
+        'once',
+        'spiralSearch',
+      ])
+        .toSetSeq()
+        .toMap()
+        .map(method => this[method].bind(this))
+        .toObject(),
+    });
 
-    this._magnetization = this._board.map(row => row.map(symbol => 0));
+    const player = findEntities(level.board, s => s instanceof entities.Player)[0];
+    // Throughout the game, entities must be allowed to act in the order they
+    // originally appeared in the level file in a RTL reading order.
+    // Player is first; spawned entities are pushed to the end.
+    this._entityList = new EntityList(
+      [
+        player,
+        ...findEntities(
+          level.board,
+          s =>
+            s != null &&
+            !(s instanceof entities.Player) &&
+            !(s instanceof entities.Wall && !(s instanceof entities.Field)),
+        ),
+      ],
+      { board: this._entityApi },
+    );
+    this._board = range(dimensions.height).map(() => []);
+    for (const entity of this._entityList) {
+      const [x, y] = entity.coords;
+      this._board[y][x] = entity;
+    }
+    const walls = findEntities(level.board, s => s instanceof entities.Wall);
+    for (const wall of walls) {
+      const [x, y] = wall.coords;
+      this._board[y][x] = wall.cloneWithState({ key: `${x},${y}`, board: this._entityApi });
+    }
+    this._fields = this._cloneBoard(level.board, entity => entity instanceof entities.Field);
+
+    this._magnetization = range(dimensions.height).map(() => range(dimensions.width).map(() => 0));
     this._tickCounter = 0;
     this._ate = null;
     this._shoved = null;
@@ -67,48 +110,13 @@ export default class Board {
     this._paused = true;
     this._emit = this.emit;
     this.emit = undefined;
-    const magnets = findCoordsFor(this._board, s => s instanceof entities.Magnet);
-    for (const magnetCoords of magnets) {
-      this._trackMagnetAt(magnetCoords);
+    const magnets = findEntities(this._board, s => s instanceof entities.Magnet);
+    for (const magnet of magnets) {
+      this._trackMagnet(magnet);
     }
 
-    this._entityApi = Object.freeze({
-      getState,
-      random: this._random,
-      emit: (event, ...args) => {
-        switch (event) {
-          case 'progress':
-            return this._emit(event, args);
-          case 'win':
-            return this._emit(event, this.recording);
-        }
-        this._emit();
-      },
-      ...Seq.Indexed(['seek', 'shove', 'move', 'eat', 'at', 'setAt', 'once', 'spiralSearch'])
-        .toSetSeq()
-        .toMap()
-        .map(method => this[method].bind(this))
-        .toObject(),
-    });
+    this._spawn = [...player.coords];
 
-    const playerCoords = findCoordsFor(this._board, s => s instanceof entities.Player)[0];
-    this._spawn = [...playerCoords];
-
-    // This is one of the most core data structures we need to maintain.
-    // Throughout the game, entities must be allowed to act in the order they
-    // originally appeared in the level file in a RTL reading order.
-    // Player is first; spawned entities are pushed to the end.
-    this._entityCoords = [
-      playerCoords,
-      ...findCoordsFor(
-        this._board,
-        s =>
-          s != null &&
-          !(s instanceof entities.Player) &&
-          !(s instanceof entities.Wall && !(s instanceof entities.Field)),
-      ),
-    ];
-    this._entitiesToDelete = [];
     this._iteratorObjects = range(this.dimensions.width * this.dimensions.height).map(i =>
       this._initializeIteratorObject({}),
     );
@@ -154,17 +162,10 @@ export default class Board {
   tick(playerDirection) {
     const scheduled = !playerDirection;
 
-    this._entityCoords.forEach((coords, i) => {
-      const entity = this.at(coords);
-      if (!entity || this._entitiesToDelete.includes(i)) {
-        return;
-      }
-
+    for (const entity of this._entityList) {
       if (entity instanceof entities.Player) {
-        invariant(i === 0, 'The player entity is no longer first in the entity list!');
-
         if (playerDirection) {
-          this.move(this.getPlayerCoords(), playerDirection);
+          this.move(this.getPlayer(), playerDirection);
         }
       }
       let sleeping = !(
@@ -172,17 +173,14 @@ export default class Board {
         (!scheduled && entity.opportunistic)
       ); // not every entity thinks every tick
       if (!sleeping) {
-        sleeping = this._theMagneticFields(coords); // stuck entities can't think
+        sleeping = this._theMagneticFields(entity); // stuck entities can't think
       }
       if (entity.think && !sleeping) {
-        entity.think(this._entityApi, coords, entities);
+        entity.think(this._entityApi, entities);
       }
-    });
+    }
 
-    this._entitiesToDelete.forEach(indexOfCoords => {
-      this._entityCoords.splice(indexOfCoords, 1);
-    });
-    this._entitiesToDelete.length = 0;
+    this._entityList.purge();
 
     this._tickCounter = (this._tickCounter + 1) % 105;
     if (this.recording) {
@@ -210,19 +208,20 @@ export default class Board {
     setAt(this._board, coords, newEntity, direction, distance);
   }
 
-  getPlayerCoords() {
-    return this._entityCoords[0];
+  getPlayer() {
+    return this._entityList.getPlayer(0);
   }
 
   respawnPlayer() {
     const coords = this.spiralSearch(this._spawn, coords => this.at(coords) === null);
-    this.setAt(coords, entities.get('Player'));
-    copyCoords(coords, this.getPlayerCoords());
+    const { Player } = entities;
+    const newPlayer = this._entityList.set(0, new Player(coords));
+    this.setAt(coords, newPlayer);
   }
 
-  seek(coords) {
-    const [x, y] = coords;
-    const [px, py] = this.getPlayerCoords();
+  seek(entity) {
+    const [x, y] = entity.coords;
+    const [px, py] = this.getPlayer().coords;
     const dx = x - px;
     const dy = y - py;
     const xDist = Math.abs(dx);
@@ -235,30 +234,30 @@ export default class Board {
     } else {
       direction = randomDirection(this._random);
     }
-    this.move(coords, direction);
+    this.move(entity, direction);
   }
 
-  canMove(coords, direction) {
-    return this._interact(coords, direction, true);
+  canMove(entity, direction) {
+    return this._interact(entity, direction, true);
   }
 
-  move(coords, direction) {
-    const entity = this.at(coords);
-    let targetEntity = this.at(coords, direction);
+  move(entity, direction) {
+    let targetEntity = this.at(entity.coords, direction);
 
     if (entity.roundness !== 5 && targetEntity && targetEntity.roundness !== 5) {
-      direction = this._deflect(coords, direction);
-      targetEntity = this.at(coords, direction); // should always be null?
+      direction = this._deflect(entity, direction);
+      targetEntity = this.at(entity.coords, direction); // should always be null?
     }
 
-    const canMove = this._interact(coords, direction);
+    const canMove = this._interact(entity, direction);
     if (canMove) {
-      this._moveCoords(coords, direction);
+      this._move(entity, direction);
     }
+    return canMove;
   }
 
-  eat(coords, direction) {
-    const targetEntity = this.at(coords, direction);
+  eat(entity, direction) {
+    const targetEntity = this.at(entity.coords, direction);
 
     if (!this._dryRun) {
       if (targetEntity instanceof entities.Player) {
@@ -266,28 +265,34 @@ export default class Board {
           this._emit('death');
         });
       } else {
-        const snackCoordsIdx = this._findIndexOfCoordsAt(coords, direction);
-        invariant(snackCoordsIdx >= 0, 'Could not eat entity. It did not exist!');
-        this._entitiesToDelete.push(snackCoordsIdx);
+        const snack = this.at(entity.coords, direction);
+        invariant(snack, 'Could not eat entity. It did not exist!');
+        this._entityList.destroy(snack);
       }
-      this.setAt(coords, null, direction);
+      this.setAt(entity.coords, null, direction);
     }
   }
 
-  shove(coords, direction) {
+  shove(entity, direction) {
     let shoved = false;
-    if (!this.at(coords, direction, 2)) {
+    if (!this.at(entity.coords, direction, 2)) {
       if (!this._dryRun) {
-        const pusheeCoords = this._findCoordsAt(coords, direction);
-        this._moveCoords(pusheeCoords, direction);
+        const pushee = this.at(entity.coords, direction);
+        this._move(pushee, direction);
         shoved = true;
       }
     }
     return shoved;
   }
 
-  _interact(coords, direction, dryRun = false) {
-    const entity = this.at(coords);
+  replace(entity, replaceWith) {
+    const newEntity = this._entityList.replace(entity, replaceWith);
+    this.setAt(newEntity.coords, newEntity);
+    return newEntity;
+  }
+
+  _interact(entity, direction, dryRun = false) {
+    const { coords } = entity;
     const targetEntity = this.at(coords, direction);
 
     if (!targetEntity) {
@@ -297,18 +302,15 @@ export default class Board {
       return false;
     }
     this._dryRun = dryRun;
-    const moveCanceled = entity.interact(this._entityApi, coords, direction, entities);
-    const eaten = this._entitiesToDelete.find(idx =>
-      coordsAreEqual(coords, this._entityCoords[idx], direction),
-    );
+    const moveCanceled = entity.interact(this._entityApi, direction, entities);
+    const eaten = targetEntity.state.willBeDeleted;
     const newTargetEntity = this.at(coords, direction);
     const reactingEntity = eaten ? targetEntity : newTargetEntity;
 
     if (reactingEntity instanceof entities.Interactor) {
-      const targetCoords = this._findCoordsAt(coords, direction);
       // If you shove something, it isn't next to you anymore. It can't do anything to you.
       // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
-      reactingEntity.react(this._entityApi, targetCoords, flip(direction), entities);
+      reactingEntity.react(this._entityApi, flip(direction), entities);
     }
 
     this._dryRun = null;
@@ -316,11 +318,11 @@ export default class Board {
     return shouldMove;
   }
 
-  _deflect(coords, direction) {
-    const targetEntity = this.at(coords, direction);
+  _deflect(entity, direction) {
+    const targetEntity = this.at(entity.coords, direction);
 
     // Does the roundness of the object I hit permit me only a particular direction?
-    const directions = getDeflections(coords, direction, targetEntity.roundness);
+    const directions = getDeflections(entity.coords, direction, targetEntity.roundness);
 
     if (directions) {
       const [direction1, direction2] = directions;
@@ -328,10 +330,10 @@ export default class Board {
 
       const canUse1 = !direction1
         ? false
-        : this.canMove(coords, direction1) && this.canMove(coords, leftOf(direction));
+        : this.canMove(entity, direction1) && this.canMove(entity, leftOf(direction));
       const canUse2 = !direction2
         ? false
-        : this.canMove(coords, direction2) && this.canMove(coords, rightOf(direction));
+        : this.canMove(entity, direction2) && this.canMove(entity, rightOf(direction));
 
       if (canUse1 && canUse2) {
         if (this._random.nextBoolean()) {
@@ -349,7 +351,7 @@ export default class Board {
   }
 
   // On a Ferris wheel, looking out on Coney Island...
-  _theMagneticFields(coords) {
+  _theMagneticFields(entity) {
     // NOTES:
     // Magnets are polar, i.e. two horizontal magnets (S S) will not snap together.
     // Pulling is passive, being pulled happens on your turn. This is why blocks were thinkers.
@@ -365,71 +367,74 @@ export default class Board {
     // Ss S   =>  S sS   =>  Ss S   =>  ... ad infintem
     // This suggests that being attracted has priority over being stuck
 
-    const entity = this.at(coords);
-    const magnetismOnEntity = at(this._magnetization, coords);
+    const magnetismOnEntity = at(this._magnetization, entity.coords);
 
-    if (!entity || magnetismOnEntity === 0) {
+    if (magnetismOnEntity === 0) {
       return false;
     }
 
     directions.forEach((direction, i) => {
-      const possibleTarget = this.at(coords, direction, 2);
+      const possibleTarget = this.at(entity.coords, direction, 2);
       if (
         entity instanceof entities.Magnet &&
         aligned(entity.orientation, direction) &&
         possibleTarget instanceof entities.Player &&
-        this.at(coords, direction) === null
+        this.at(entity.coords, direction) === null
       ) {
-        this.move(coords, direction);
+        this.move(entity, direction);
       } else if (
         possibleTarget instanceof entities.Magnet &&
         aligned(possibleTarget.orientation, direction) &&
         entity.pullable &&
-        this.at(coords, direction) === null
+        this.at(entity.coords, direction) === null
       ) {
         const entityIsMagnet = entity instanceof entities.Magnet;
         if (
           !entityIsMagnet ||
           (entityIsMagnet && entity.orientation !== possibleTarget.orientation)
         ) {
-          this.move(coords, direction);
+          this.move(entity, direction);
         }
       }
     });
-    return at(this._magnetization, coords) >= 32;
+    return at(this._magnetization, entity.coords) >= 32;
   }
 
-  _alterMagnetTracking(magnetCoords, plusMinus) {
-    const magnet = this.at(magnetCoords);
-    setAt(this._magnetization, magnetCoords, at(this._magnetization, magnetCoords) + 1 * plusMinus);
+  _alterMagnetTracking(magnet, plusMinus) {
+    const { coords } = magnet;
+    setAt(this._magnetization, coords, at(this._magnetization, coords) + 1 * plusMinus);
     directionsByOrientation[magnet.orientation].forEach(direction => {
       setAt(
         this._magnetization,
-        magnetCoords,
-        at(this._magnetization, magnetCoords, direction, 1) + 32 * plusMinus,
+        coords,
+        at(this._magnetization, coords, direction, 1) + 32 * plusMinus,
         direction,
         1,
       );
       setAt(
         this._magnetization,
-        magnetCoords,
-        at(this._magnetization, magnetCoords, direction, 2) + 1 * plusMinus,
+        coords,
+        at(this._magnetization, coords, direction, 2) + 1 * plusMinus,
         direction,
         2,
       );
     });
   }
 
-  _trackMagnetAt(magnetCoords) {
-    this._alterMagnetTracking(magnetCoords, 1);
+  _trackMagnet(magnet) {
+    this._alterMagnetTracking(magnet, 1);
   }
 
-  _untrackMagnetAt(magnetCoords) {
-    this._alterMagnetTracking(magnetCoords, -1);
+  _untrackMagnet(magnet) {
+    this._alterMagnetTracking(magnet, -1);
   }
 
-  _cloneBoard(board) {
-    return board.map(row => [...row]);
+  _cloneBoard(board, pred) {
+    return board.map(row => [
+      ...row.map(
+        entity => (entity && pred(entity) ? entity.cloneWithState({ board: this }) : null),
+      ),
+    ]);
   }
   _filterBoard(board, predicate) {
     for (const row of board) {
@@ -439,21 +444,6 @@ export default class Board {
         }
       }
     }
-  }
-
-  _findIndexOfCoordsAt(coords, direction = null, distance = 1) {
-    const deltaCoords = directionsAsDeltaCoords[direction];
-    const x = coords[0] + deltaCoords[0] * distance;
-    const y = coords[1] + deltaCoords[1] * distance;
-
-    return this._entityCoords.findIndex(([ex, ey]) => ex === x && ey === y);
-  }
-
-  _findCoordsAt(coords, direction = null, distance = 1) {
-    const entityCoordsIdx = this._findIndexOfCoordsAt(coords, direction, distance);
-    return entityCoordsIdx > 0
-      ? this._entityCoords[entityCoordsIdx]
-      : getCoordsInDirection(coords, direction, distance);
   }
 
   spiralSearch(coords, cb, maxRadius) {
@@ -483,17 +473,25 @@ export default class Board {
     }
   }
 
-  _moveCoords(coords, direction) {
-    const entity = this.at(coords);
+  _move(entity, direction) {
     const isMagnet = entity instanceof entities.Magnet;
     if (isMagnet) {
-      this._untrackMagnetAt(coords);
+      this._untrackMagnet(entity);
     }
-    this.setAt(coords, null);
-    moveCoordsInDirection(coords, direction);
-    this.setAt(coords, entity);
+    this.setAt(entity.coords, null);
+    moveCoordsInDirection(entity.coords, direction);
+    this.setAt(entity.coords, entity);
     if (isMagnet) {
-      this._trackMagnetAt(coords);
+      this._trackMagnet(entity);
+    }
+  }
+
+  _reemit(event, ...args) {
+    switch (event) {
+      case 'progress':
+        return this._emit(event, args);
+      case 'win':
+        return this._emit(event, this.recording);
     }
   }
 
@@ -502,7 +500,6 @@ export default class Board {
     obj.y = null;
     obj.entity = null;
     obj.field = null;
-    obj.key = null;
     return obj;
   }
 

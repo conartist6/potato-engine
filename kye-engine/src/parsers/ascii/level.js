@@ -88,10 +88,11 @@ export default class Level {
   }
 
   static parseBoard(lines) {
-    return lines.map(line =>
-      line.split('').map(symbol => {
+    return lines.map((line, y) =>
+      line.split('').map((symbol, x) => {
         const EntityType = entities.getEntityTypeBySymbol(symbol);
-        const inst = EntityType && new EntityType(EntityType.attributesBySymbol.get(symbol));
+        const inst =
+          EntityType && new EntityType([x, y], EntityType.attributesBySymbol.get(symbol));
         invariant(
           symbol === ' ' || inst,
           'Level contained unknown symbol %s (dec %s).',

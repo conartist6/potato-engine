@@ -3,12 +3,12 @@ import { Map } from 'immutable';
 import { rightOf, leftOf } from 'kye-engine/lib/directions';
 
 export default class Turner extends Interactor {
-  react(board, coords, direction, entities) {
+  react(board, direction, entities) {
+    const { coords } = this;
     const sourceEntity = board.at(coords, direction);
-    if (sourceEntity instanceof entities.Slider) {
-      const sliderDirection = sourceEntity.direction;
+    if (sourceEntity.attribute === sourceEntity.direction) {
       const transform = this.turn === 'ANTICLOCKWISE' ? rightOf : leftOf;
-      board.setAt(coords, new entities.Slider(transform(sliderDirection)), direction);
+      sourceEntity.replace(transform(sourceEntity.direction));
     }
   }
 

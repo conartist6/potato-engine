@@ -8,8 +8,8 @@ export default class Slider extends Thinker {
     return this.attribute;
   }
 
-  think(board, coords) {
-    board.move(coords, this.direction);
+  think(board) {
+    board.move(this, this.direction);
   }
 }
 Slider.attributesBySymbol = Map({ u: 'UP', d: 'DOWN', l: 'LEFT', r: 'RIGHT' });

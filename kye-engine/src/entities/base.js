@@ -1,6 +1,8 @@
 export default class Base {
-  constructor(attribute) {
+  constructor(coords, attribute, state) {
+    this.coords = coords;
     this.attribute = attribute;
+    this.state = state;
   }
 
   get symbol() {
@@ -36,5 +38,48 @@ export default class Base {
 
   get roundness() {
     return 5;
+  }
+
+  get board() {
+    return this.state && this.state.board;
+  }
+
+  clone() {
+    const EntityType = this.constructor;
+    return new EntityType(this.coords, this.attribute, this.state && { ...this.state });
+  }
+
+  cloneWithAttribute(attribute) {
+    attribute = attribute == null ? this.attribute : attribute;
+    const EntityType = this.constructor;
+    return new EntityType(this.coords, attribute, this.state && { ...this.state });
+  }
+
+  cloneWithState(state = {}) {
+    state = { ...this.state, ...state };
+    const EntityType = this.constructor;
+    return new EntityType(this.coords, this.attribute, state);
+  }
+
+  /* Board convenience methods */
+
+  replace(attribute) {
+    this.board.replace(this, attribute);
+  }
+
+  eat(direction) {
+    this.board.eat(this, direction);
+  }
+
+  seek() {
+    this.board.seek(this);
+  }
+
+  shove(direction) {
+    return this.board.shove(this, direction);
+  }
+
+  move(direction) {
+    return this.board.move(this, direction);
   }
 }

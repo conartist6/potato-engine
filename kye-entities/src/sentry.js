@@ -3,14 +3,15 @@ import { Map } from 'immutable';
 import directions, { flip } from 'kye-engine/lib/directions';
 
 export default class Sentry extends Thinker {
-  think(board, coords) {
-    board.move(coords, this.direction);
+  think(board) {
+    board.move(this, this.direction);
   }
 
-  interact(board, coords, direction, entities) {
-    const targetEntity = board.at(coords, direction);
-    const shoved = targetEntity.pushable && board.shove(coords, direction);
-    board.setAt(coords, new entities.Sentry(flip(this.direction)));
+  interact(board, direction, entities) {
+    const targetEntity = board.at(this.coords, direction);
+    const shoved = targetEntity.pushable && board.shove(this, direction);
+
+    this.replace(flip(this.direction));
     return shoved;
   }
 

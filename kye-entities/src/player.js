@@ -6,12 +6,12 @@ export default class Player extends Interactor {
     return false;
   }
 
-  interact(board, coords, direction, entities) {
-    const targetEntity = board.at(coords, direction);
+  interact(board, direction, entities) {
+    const targetEntity = board.at(this.coords, direction);
     if (targetEntity instanceof entities.Edible) {
-      board.eat(coords, direction);
+      board.eat(this, direction);
     } else if (targetEntity.pushable) {
-      board.shove(coords, direction);
+      board.shove(this, direction);
     }
   }
 }

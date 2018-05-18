@@ -10,12 +10,11 @@ export default class Interactor extends Base {
    *
    * Note that a magnet will never pull anything into an occupied space.
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {Array} coords The board coordinates of the colliding entity. These are not a copy, changing them will move the object!
    * @param {String} direction The direction from the colliding entity to the entity being collided with.
    * @param {Object} entities The map of entities, necessary to avoid circular dependencies when referencing another entity.
    * @returns {boolean} Return true to cancel the intended movement.
    **/
-  interact(board, coords, direction, entities) {
+  interact(board, direction, entities) {
     return false;
   }
 
@@ -25,10 +24,9 @@ export default class Interactor extends Base {
    * being pushed. Sorry!
    *
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {Array} coords The coordinates of this entity on the board. These are not a copy, changing them will move the object!
    * @param {String} direction The direction from the this entity to the colliding entity.
    * @param {Object} entities The map of entities, necessary to avoid circular dependencies when referencing another entity.
    **/
-  react(board, coords, direction, entities) {}
+  react(board, direction, entities) {}
 }
 Interactor.__name = 'Interactor'; // uglify killin' me

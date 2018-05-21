@@ -1,6 +1,6 @@
 {
   "name": "kye-engine",
-  "version": "3.1.0-alpha.2",
+  "version": "3.1.0-alpha.3",
   "license": "MIT",
   "dependencies": {
     "event-emitter": "^0.3.5",
@@ -27,7 +27,7 @@
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",
-    "prepublish": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",

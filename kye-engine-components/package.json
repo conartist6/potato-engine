@@ -1,6 +1,6 @@
 {
   "name": "kye-engine-components",
-  "version": "3.1.0-alpha.2",
+  "version": "3.1.0-alpha.3",
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
@@ -13,7 +13,7 @@
   },
   "peerDependencies": {
     "react": "^16.3.2",
-    "kye-engine": "3.1.0-alpha.2"
+    "kye-engine": "3.1.0-alpha.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -37,7 +37,7 @@
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",
-    "prepublish": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",

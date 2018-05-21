@@ -1,10 +1,10 @@
 {
   "name": "kye-entities",
-  "version": "3.1.0-alpha.2",
+  "version": "3.1.0-alpha.3",
   "license": "MIT",
   "sideEffects": ["./src/index.js"],
   "peerDependencies": {
-    "kye-engine": "3.1.0-alpha.2"
+    "kye-engine": "3.1.0-alpha.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -23,7 +23,7 @@
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",
-    "prepublish": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",

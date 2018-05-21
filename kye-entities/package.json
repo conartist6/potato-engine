@@ -1,10 +1,10 @@
 {
   "name": "kye-entities",
-  "version": "3.1.0-alpha.3",
+  "version": "3.1.0-alpha.4",
   "license": "MIT",
   "sideEffects": ["./src/index.js"],
   "peerDependencies": {
-    "kye-engine": "3.1.0-alpha.3"
+    "kye-engine": "3.1.0-alpha.4"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -30,5 +30,8 @@
     "url": "https://github.com/conartist6/kye/tree/master/kye-entities"
   },
   "main": "lib/index",
-  "module": "lib/index"
+  "module": "lib/index",
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
 }

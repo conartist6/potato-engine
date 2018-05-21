@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import cx from 'classnames'; // :'
 import dasherize from 'dasherize';
 import { Set } from 'immutable';
-import e from 'kye-engine/entities';
+import e from 'kye-engine/lib/entities';
 
 import './entity.css';
 

@@ -68,7 +68,7 @@ export default class Board {
       entities,
       getState,
       random: this._random,
-      emit: () => this._reemit,
+      emit: (...args) => this._reemit(...args),
       ...Seq.Indexed([
         'seek',
         'shove',
@@ -313,7 +313,7 @@ export default class Board {
       return false;
     }
     this._dryRun = dryRun;
-    const moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
+    let moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
     const eaten = targetEntity.state.willBeDeleted;
     const newTargetEntity = this.at(coords, direction);
     const reactingEntity = eaten ? targetEntity : newTargetEntity;
@@ -323,7 +323,7 @@ export default class Board {
       // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
       reactingEntity.react(this._entityApi, newTargetEntity, flip(direction));
     } else if (reactingEntity instanceof entities.Field) {
-      reactingEntity.enter(this._entityApi, newTargetEntity);
+      moveCanceled = reactingEntity.enter(this._entityApi, entity, flip(direction)) || moveCanceled;
     }
 
     this._dryRun = null;

@@ -294,9 +294,12 @@ export default class Board {
 
   shove(entity, direction) {
     let shoved = false;
-    if (!this.at(entity.coords, direction, 2)) {
+    const pushee = this.at(entity.coords, direction);
+    if (
+      !this.at(entity.coords, direction, 2) &&
+      !(pushee.isStatic || pushee instanceof entities.Field)
+    ) {
       if (!this._dryRun) {
-        const pushee = this.at(entity.coords, direction);
         this._move(pushee, direction);
         shoved = true;
       }
@@ -333,7 +336,8 @@ export default class Board {
     }
 
     this._dryRun = null;
-    const shouldMove = !moveCanceled && (newTargetEntity === null || newTargetEntity.pathable);
+    const shouldMove =
+      !moveCanceled && (newTargetEntity === null || newTargetEntity instanceof entities.Field);
     return shouldMove;
   }
 

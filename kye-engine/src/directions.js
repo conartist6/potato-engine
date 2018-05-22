@@ -114,12 +114,6 @@ export function coordsAreEqual(fromCoords, toCoords, direction) {
   return fromCoords[0] + dx === toCoords[0] && fromCoords[1] + dy === toCoords[1];
 }
 
-export function getCoordsInDirection(coords, direction, distance = 1) {
-  const newCoords = [...coords];
-  moveCoordsInDirection(newCoords, direction, distance);
-  return newCoords;
-}
-
 export function leftOf(direction) {
   return allDirections[(indexesByDirection[direction] + 6) % 8];
 }

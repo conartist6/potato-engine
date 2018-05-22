@@ -17,8 +17,7 @@ export default class Thinker extends Interactor {
    * Thinkers get to think in the right to left, top to bottom order that they
    * were added to the game board.
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {Object} entities The map of entities, necessary to avoid circular dependencies when referencing another entity.
    **/
-  think(board, entities) {}
+  think(board) {}
 }
 Thinker.__name = 'Thinker'; // uglify killin' me

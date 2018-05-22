@@ -20,9 +20,9 @@ export default class Monster extends Interactor {
     }
   }
 
-  eatPlayers(board, direction, entities) {
-    if (board.at(this.coords, direction) instanceof entities.Player) {
-      this.eat(direction);
+  eatPlayers(board, targetEntity) {
+    if (targetEntity instanceof board.entities.Player) {
+      this.eat(targetEntity);
     }
   }
 

@@ -2,6 +2,10 @@ import invariant from 'invariant';
 import entities from './entities';
 import Base from './entities/base';
 
+/**
+ * In Kye, thinking entities have the opportunity to take action in the order (RTL reading order)
+ * that they originally appeared in the level. This structure is needed to keep track of that order.
+ */
 export default class EntityList {
   constructor(entities, initialState = {}) {
     this._playerList = [];

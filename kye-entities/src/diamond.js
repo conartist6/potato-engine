@@ -6,7 +6,7 @@ export default class Diamond extends Edible {
     return true;
   }
 
-  react(board, direction, entities) {
+  react(board) {
     const { coords } = this;
     const eaten = board.at(coords) !== this;
     if (eaten) {

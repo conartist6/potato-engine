@@ -7,8 +7,7 @@ export default class Sentry extends Thinker {
     board.move(this, this.direction);
   }
 
-  interact(board, direction, entities) {
-    const targetEntity = board.at(this.coords, direction);
+  interact(board, targetEntity, direction) {
     const shoved = targetEntity.pushable && board.shove(this, direction);
 
     this.replace(flip(this.direction));

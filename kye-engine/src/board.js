@@ -65,6 +65,7 @@ export default class Board {
     this._random = new Prando(level.seed);
 
     this._entityApi = Object.freeze({
+      entities,
       getState,
       random: this._random,
       emit: () => this._reemit,
@@ -85,20 +86,8 @@ export default class Board {
         .toObject(),
     });
 
-    const player = findEntities(level.board, s => s instanceof entities.Player)[0];
-    // Throughout the game, entities must be allowed to act in the order they
-    // originally appeared in the level file in a RTL reading order.
-    // Player is first; spawned entities are pushed to the end.
     this._entityList = new EntityList(
-      [
-        player,
-        ...findEntities(
-          level.board,
-          e =>
-            e != null &&
-            !(e.isStatic || e instanceof entities.Player || e instanceof entities.Field),
-        ),
-      ],
+      findEntities(level.board, e => e != null && !(e.isStatic || e instanceof entities.Field)),
       { board: this._entityApi },
     );
     this._board = array2d(dimensions, null);
@@ -134,7 +123,7 @@ export default class Board {
       this._trackMagnet(magnet);
     }
 
-    this._spawn = [...player.coords];
+    this._spawn = [...this.getPlayer().coords];
 
     this._iteratorObjects = range(this.dimensions.width * this.dimensions.height).map(i =>
       this._initializeIteratorObject({}),
@@ -275,20 +264,15 @@ export default class Board {
     return canMove;
   }
 
-  eat(entity, direction) {
-    const targetEntity = this.at(entity.coords, direction);
-
+  eat(entity, targetEntity) {
+    invariant(targetEntity, 'Could not eat entity. It did not exist!');
     if (!this._dryRun) {
       if (targetEntity instanceof entities.Player) {
         this.once('tick', () => {
           this._emit('death');
         });
-      } else {
-        const snack = this.at(entity.coords, direction);
-        invariant(snack, 'Could not eat entity. It did not exist!');
-        this._entityList.destroy(snack);
       }
-      this.setAt(targetEntity.coords);
+      this._destroy(targetEntity);
     }
   }
 
@@ -313,6 +297,11 @@ export default class Board {
     return newEntity;
   }
 
+  _destroy(entity) {
+    this._entityList.destroy(entity);
+    this.setAt(entity.coords, null);
+  }
+
   _interact(entity, direction, dryRun = false) {
     const { coords } = entity;
     const targetEntity = this.at(coords, direction);
@@ -324,7 +313,7 @@ export default class Board {
       return false;
     }
     this._dryRun = dryRun;
-    const moveCanceled = entity.interact(this._entityApi, direction, entities);
+    const moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
     const eaten = targetEntity.state.willBeDeleted;
     const newTargetEntity = this.at(coords, direction);
     const reactingEntity = eaten ? targetEntity : newTargetEntity;
@@ -332,7 +321,9 @@ export default class Board {
     if (reactingEntity instanceof entities.Interactor) {
       // If you shove something, it isn't next to you anymore. It can't do anything to you.
       // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
-      reactingEntity.react(this._entityApi, flip(direction), entities);
+      reactingEntity.react(this._entityApi, newTargetEntity, flip(direction));
+    } else if (reactingEntity instanceof entities.Field) {
+      reactingEntity.enter(this._entityApi, newTargetEntity);
     }
 
     this._dryRun = null;

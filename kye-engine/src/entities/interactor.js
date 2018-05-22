@@ -8,13 +8,13 @@ export default class Interactor extends Base {
    * If you eat or shove the entity, clearing the square, your movement will proceed as
    * initiated unless your return true from this method, which will cancel the movement.
    *
-   * Note that a magnet will never pull anything into an occupied space.
+   * A magnet's pull never triggers an interaction'.
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
+   * @param {Entity} target The colliding entity.
    * @param {String} direction The direction from the colliding entity to the entity being collided with.
-   * @param {Object} entities The map of entities, necessary to avoid circular dependencies when referencing another entity.
    * @returns {boolean} Return true to cancel the intended movement.
    **/
-  interact(board, direction, entities) {
+  interact(board, target, direction) {
     return false;
   }
 
@@ -24,9 +24,9 @@ export default class Interactor extends Base {
    * being pushed. Sorry!
    *
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {String} direction The direction from the this entity to the colliding entity.
-   * @param {Object} entities The map of entities, necessary to avoid circular dependencies when referencing another entity.
+   * @param {Entity} target The colliding entity.
+   * @param {String} direction The direction from this entity to the colliding entity.
    **/
-  react(board, direction, entities) {}
+  react(board, target, direction) {}
 }
 Interactor.__name = 'Interactor'; // uglify killin' me

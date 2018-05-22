@@ -3,7 +3,7 @@ import { Map } from 'immutable';
 import { rightOf, leftOf } from 'kye-engine/lib/directions';
 
 export default class Turner extends Interactor {
-  react(board, direction, entities) {
+  react(board, targetEntity, direction) {
     const { coords } = this;
     const sourceEntity = board.at(coords, direction);
     if (sourceEntity.attribute === sourceEntity.direction) {

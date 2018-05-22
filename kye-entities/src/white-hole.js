@@ -10,11 +10,11 @@ export default class WhiteHole extends Thinker {
     this.fullFor = 4;
   }
 
-  think(board, entities) {
+  think(board) {
     const { coords } = this;
     this.fullFor--;
     if (this.fullFor === 0) {
-      const { BlackHole } = entities;
+      const { BlackHole } = board.entities;
       board.replace(this, new BlackHole(this.coords));
     }
   }

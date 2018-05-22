@@ -55,12 +55,13 @@ export default class EntityList {
 
   purge() {
     let count = 0;
-    for (let i = 0; i < this._entityList.length; i++, count++) {
+    for (let i = 0; i < this._entityList.length; i++) {
       if (this._entityList[i].state.willBeDeleted) {
-        i++;
+        continue;
       }
       this._entityList[count] = this._entityList[i];
       this._entityList[count].state._idx = count;
+      count++;
     }
     this._entityList.length = count;
   }

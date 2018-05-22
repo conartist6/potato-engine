@@ -35,6 +35,18 @@ function findEntities(board, cb) {
   );
 }
 
+function array2d(dimensions, initialValue) {
+  const { height, width } = dimensions;
+  const arr = new Array(height);
+  for (let i = 0; i < height; i++) {
+    arr[i] = new Array(width);
+    for (let j = 0; j < width; j++) {
+      arr[i][j] = initialValue;
+    }
+  }
+  return arr;
+}
+
 const recordingDirectionSymbols = {
   LEFT: 'l',
   UP: 'u',
@@ -82,27 +94,34 @@ export default class Board {
         player,
         ...findEntities(
           level.board,
-          s =>
-            s != null &&
-            !(s instanceof entities.Player) &&
-            !(s instanceof entities.Wall && !(s instanceof entities.Field)),
+          e =>
+            e != null &&
+            !(e.isStatic || e instanceof entities.Player || e instanceof entities.Field),
         ),
       ],
       { board: this._entityApi },
     );
-    this._board = range(dimensions.height).map(() => []);
+    this._board = array2d(dimensions, null);
     for (const entity of this._entityList) {
       const [x, y] = entity.coords;
       this._board[y][x] = entity;
     }
-    const walls = findEntities(level.board, s => s instanceof entities.Wall);
-    for (const wall of walls) {
-      const [x, y] = wall.coords;
-      this._board[y][x] = wall.cloneWithState({ key: `${x},${y}`, board: this._entityApi });
+    this._statics = findEntities(level.board, s => s && s.isStatic);
+    for (const staticEntity of this._statics) {
+      const [x, y] = staticEntity.coords;
+      this._board[y][x] = staticEntity;
     }
-    this._fields = this._cloneBoard(level.board, entity => entity instanceof entities.Field);
+    this._fieldsList = findEntities(level.board, s => s instanceof entities.Field).map(field => {
+      const [x, y] = field.coords;
+      return field.cloneWithState({ key: `${x},${y}`, board: this._entityApi });
+    });
+    this._fields = array2d(dimensions, null);
+    for (const field of this._fieldsList) {
+      const [x, y] = field.coords;
+      this._fields[y][x] = field;
+    }
 
-    this._magnetization = range(dimensions.height).map(() => range(dimensions.width).map(() => 0));
+    this._magnetization = array2d(dimensions, 0);
     this._tickCounter = 0;
     this._ate = null;
     this._shoved = null;
@@ -269,7 +288,7 @@ export default class Board {
         invariant(snack, 'Could not eat entity. It did not exist!');
         this._entityList.destroy(snack);
       }
-      this.setAt(entity.coords, null, direction);
+      this.setAt(targetEntity.coords);
     }
   }
 
@@ -298,7 +317,7 @@ export default class Board {
     if (!targetEntity) {
       return true; // for canMove
     }
-    if (!entity instanceof entities.Interactor) {
+    if (!entity instanceof entities.Interactor || targetEntity.isStatic) {
       return false;
     }
     this._dryRun = dryRun;
@@ -501,6 +520,18 @@ export default class Board {
     obj.entity = null;
     obj.field = null;
     return obj;
+  }
+
+  *entities() {
+    yield* this._entityList;
+  }
+
+  *statics() {
+    yield* this._statics;
+  }
+
+  *fields() {
+    yield* this._fieldsList;
   }
 
   *[Symbol.iterator]() {

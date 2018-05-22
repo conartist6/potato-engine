@@ -4,6 +4,21 @@ import Entity from '../entity';
 import './board.css';
 
 export default class Board extends PureComponent {
+  constructor(props) {
+    super(props);
+    this._iterables = {
+      statics: {
+        [Symbol.iterator]: this.iterate.bind(this, board => board.statics()),
+      },
+      fields: {
+        [Symbol.iterator]: this.iterate.bind(this, board => board.fields()),
+      },
+      entities: {
+        [Symbol.iterator]: this.iterate.bind(this, board => board.entities()),
+      },
+    };
+  }
+
   componentDidMount() {
     this.setupBoard(this.props.board);
   }
@@ -23,12 +38,14 @@ export default class Board extends PureComponent {
     board.end();
   }
 
-  *[Symbol.iterator]() {
+  *iterate(iteratorSelector) {
     const { board } = this.props;
     const { height, width } = board.dimensions;
+    const iterator = iteratorSelector(board);
 
-    for (const { x, y, entity, field } of board) {
-      const key = entity && entity.state.key;
+    for (const entity of iterator) {
+      const [x, y] = entity.coords;
+      const key = entity && (entity.state ? entity.state.key : `${x}-${y}`);
       let element = entity && <Entity entity={entity} x={x} y={y} key={key} />;
       if (this.props.entityWrapper) {
         const Wrapper = this.props.entityWrapper;
@@ -51,7 +68,9 @@ export default class Board extends PureComponent {
 
     return (
       <div className="board" style={{ height: `${height * 20}px`, width: `${width * 20}px` }}>
-        {this}
+        <div className="layer statics">{this._iterables.statics}</div>
+        <div className="layer fields">{this._iterables.fields}</div>
+        <div className="layer entities">{this._iterables.entities}</div>
       </div>
     );
   }

@@ -46,19 +46,19 @@ export default class Base {
 
   clone() {
     const EntityType = this.constructor;
-    return new EntityType(this.coords, this.attribute, this.state && { ...this.state });
+    return new EntityType([...this.coords], this.attribute, this.state && { ...this.state });
   }
 
   cloneWithAttribute(attribute) {
     attribute = attribute == null ? this.attribute : attribute;
     const EntityType = this.constructor;
-    return new EntityType(this.coords, attribute, this.state && { ...this.state });
+    return new EntityType([...this.coords], attribute, this.state && { ...this.state });
   }
 
   cloneWithState(state = {}) {
     state = { ...this.state, ...state };
     const EntityType = this.constructor;
-    return new EntityType(this.coords, this.attribute, state);
+    return new EntityType([...this.coords], this.attribute, state);
   }
 
   /* Board convenience methods */

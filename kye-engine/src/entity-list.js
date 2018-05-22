@@ -13,7 +13,7 @@ export default class EntityList {
     }
   }
 
-  _setupState(entity) {
+  _clone(entity) {
     const list = this._getList(entity);
     return entity.cloneWithState({
       ...this._initialState,
@@ -30,7 +30,7 @@ export default class EntityList {
   }
 
   add(entity) {
-    this._getList(entity).push(this._setupState(entity));
+    this._getList(entity).push(this._clone(entity));
   }
 
   getEntity(idx) {
@@ -42,7 +42,7 @@ export default class EntityList {
   }
 
   set(idx, entity) {
-    return (this._getList(entity)[idx] = this._setupState(entity));
+    return (this._getList(entity)[idx] = this._clone(entity));
   }
 
   destroy(entity) {
@@ -68,7 +68,7 @@ export default class EntityList {
   replace(entity, replaceWith) {
     const newEntity =
       replaceWith instanceof Base
-        ? this._setupState(replaceWith)
+        ? this._clone(replaceWith)
         : entity.cloneWithAttribute(replaceWith);
     return (this._getList(entity)[entity.state._idx] = newEntity);
   }

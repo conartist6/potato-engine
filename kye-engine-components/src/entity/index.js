@@ -58,7 +58,7 @@ export default class Entity extends Component {
         data-y={y}
         // This sucks but using a single iterator has constraints and advantages.
         // Ideally css calc could be used with css attr, and this would be unneccesary.
-        style={{ position: 'absolute', top: `${y * 20}px`, left: `${x * 20}px` }}
+        style={{ top: `${y * 20}px`, left: `${x * 20}px` }}
       >
         <div className={cx(classNames)}>
           {styledEntities.has(entity.constructor) ? null : entity.symbol}

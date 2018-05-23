@@ -395,6 +395,7 @@ export default class Board {
 
     directions.forEach((direction, i) => {
       const possibleTarget = this.at(entity.coords, direction, 2);
+
       if (
         entity instanceof entities.Magnet &&
         aligned(entity.orientation, direction) &&

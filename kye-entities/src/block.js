@@ -9,6 +9,10 @@ export default class Block extends Base {
   get roundness() {
     return this.attribute === 'ROUND' ? 0 : 5;
   }
+
+  get frequency() {
+    return 1;
+  }
 }
 Block.attributesBySymbol = Map({ B: 'ROUND', b: 'SQUARE' });
 Block.__name = 'Block'; // uglify killin' me

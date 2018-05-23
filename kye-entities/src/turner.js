@@ -15,6 +15,10 @@ export default class Turner extends Interactor {
   get turn() {
     return this.attribute;
   }
+
+  get content() {
+    return this.turn === 'ANTICLOCKWISE' ? 'a' : 'c';
+  }
 }
 Turner.attributesBySymbol = Map({ a: 'ANTICLOCKWISE', c: 'CLOCKWISE' });
 Turner.__name = 'Turner'; // uglify killin' me

@@ -162,8 +162,8 @@ $border-radius: 7px;
   }
 
   &.block,
-  &.turner {
-    line-height: 12px;
+  &.turner,
+  &.timer {
     color: red;
     position: absolute;
     width: 18px;
@@ -174,8 +174,15 @@ $border-radius: 7px;
     background-color: #fff700;
     top: 1px;
     left: 1px;
+    font-size: 14px;
+    line-height: 14px;
+
+    &.turner {
+      line-height: 12px;
+    }
 
     &.turner,
+    &.timer,
     &.a_square {
       border-radius: 4px;
     }
@@ -328,6 +335,31 @@ $border-radius: 7px;
     &.a_horizontal {
       transform: rotate(90deg);
       transform-origin: 50% -3px;
+    }
+  }
+
+  &.black-hole,
+  &.white-hole {
+    border: 3px solid;
+    border-color: #9a9a9a #f8f8f9 #fff #b9b9b9;
+  }
+
+  &.black-hole {
+    background-color: black;
+  }
+
+  &.white-hole {
+    &.a_4 {
+      background-color: cyan;
+    }
+    &.a_3 {
+      background-color: yellow;
+    }
+    &.a_2 {
+      background-color: red;
+    }
+    &.a_1 {
+      background-color: #810404;
     }
   }
 }

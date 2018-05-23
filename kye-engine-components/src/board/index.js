@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import Entity from '../entity';
+import entities from 'kye-engine/lib/entities';
 
 import './board.css';
 
@@ -44,13 +45,18 @@ export default class Board extends PureComponent {
     const iterator = iteratorSelector(board);
 
     for (const entity of iterator) {
-      const [x, y] = entity.coords;
-      const key = entity && (entity.state ? entity.state.key : `${x}-${y}`);
-      let element = entity && <Entity entity={entity} x={x} y={y} key={key} />;
+      const { state, attribute, coords } = entity;
+      const [x, y] = coords;
+      const prefix = entity instanceof entities.Player ? 'p' : '';
+      const key = state ? `${prefix}${state.id}` : `${x}-${y}`;
+
+      let element = entity && (
+        <Entity entity={entity} x={x} y={y} attribute={attribute} key={key} />
+      );
       if (this.props.entityWrapper) {
         const Wrapper = this.props.entityWrapper;
         element = entity && (
-          <Wrapper entity={entity} x={x} y={y} key={key}>
+          <Wrapper entity={entity} x={x} y={y} attribute={attribute} key={key}>
             {element}
           </Wrapper>
         );

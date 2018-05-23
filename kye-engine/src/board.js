@@ -2,9 +2,11 @@ import { Seq } from 'immutable';
 import makeEmitter from 'event-emitter';
 import invariant from 'invariant';
 import allOff from 'event-emitter/all-off';
-import range from 'lodash/range';
 import Prando from 'prando';
+import BoardList from './board-list';
 import EntityList from './entity-list';
+import Base, { EntityState } from './entities/base';
+import { filter, map, range } from 'iter-tools';
 
 import {
   aligned,
@@ -18,24 +20,15 @@ import {
   leftOf,
   rightOf,
   flip,
+  manhattan,
   moveCoordsInDirection,
   randomDirection,
+  randomOrientation,
 } from './directions';
 
 import entities from './entities';
 
-function findEntities(board, cb) {
-  return board.reduce(
-    (entities, row, y) =>
-      row.reduce((entities, entity, x) => {
-        cb(entity) && entities.push(entity);
-        return entities;
-      }, entities),
-    [],
-  );
-}
-
-function array2d(dimensions, initialValue) {
+function array2d(dimensions, initialValue, entityList = []) {
   const { height, width } = dimensions;
   const arr = new Array(height);
   for (let i = 0; i < height; i++) {
@@ -44,7 +37,19 @@ function array2d(dimensions, initialValue) {
       arr[i][j] = initialValue;
     }
   }
+  for (const entity of entityList) {
+    const [x, y] = entity.coords;
+    arr[y][x] = entity;
+  }
   return arr;
+}
+
+function* iterateArray2d(array2d) {
+  for (const row of array2d) {
+    for (const cell of row) {
+      yield cell;
+    }
+  }
 }
 
 const recordingDirectionSymbols = {
@@ -56,6 +61,7 @@ const recordingDirectionSymbols = {
 
 export default class Board {
   constructor(level, dimensions, options) {
+    const { Field, Magnet } = entities;
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
     if (options.record) {
@@ -70,10 +76,11 @@ export default class Board {
       random: this._random,
       emit: (...args) => this._reemit(...args),
       ...Seq.Indexed([
-        'seek',
+        'destroy',
         'shove',
         'move',
         'eat',
+        'findNearestPlayer',
         'replace',
         'at',
         'setAt',
@@ -86,31 +93,22 @@ export default class Board {
         .toObject(),
     });
 
-    this._entityList = new EntityList(
-      findEntities(level.board, e => e != null && !(e.isStatic || e instanceof entities.Field)),
-      { board: this._entityApi },
-    );
-    this._board = array2d(dimensions, null);
-    for (const entity of this._entityList) {
-      const [x, y] = entity.coords;
-      this._board[y][x] = entity;
+    function findEntities(cb, board = level.board) {
+      return filter(entity => {
+        return entity != null && cb(entity);
+      }, iterateArray2d(board));
     }
-    this._statics = findEntities(level.board, s => s && s.isStatic);
-    for (const staticEntity of this._statics) {
-      const [x, y] = staticEntity.coords;
-      this._board[y][x] = staticEntity; // statics also live on the board.
-    }
-    this._fieldsList = findEntities(level.board, s => s instanceof entities.Field).map(field => {
-      const [x, y] = field.coords;
-      return field.cloneWithState({ key: `${x},${y}`, board: this._entityApi });
-    });
-    this._fields = array2d(dimensions, null);
-    for (const field of this._fieldsList) {
-      const [x, y] = field.coords;
-      this._fields[y][x] = field;
-    }
+    const state = { board: this._entityApi };
 
+    this._boardList = new BoardList(findEntities(e => !(e.isStatic || e instanceof Field)), state);
+    this._staticsList = new EntityList(findEntities(e => e.isStatic));
+    this._fieldsList = new EntityList(findEntities(e => e instanceof Field), state);
+
+    this._statics = array2d(dimensions, null, this._staticsList);
+    this._board = array2d(dimensions, null, this._boardList);
+    this._fields = array2d(dimensions, null, this._fieldsList);
     this._magnetization = array2d(dimensions, 0);
+
     this._tickCounter = 0;
     this._ate = null;
     this._shoved = null;
@@ -118,15 +116,15 @@ export default class Board {
     this._paused = true;
     this._emit = this.emit;
     this.emit = undefined;
-    const magnets = findEntities(this._board, s => s instanceof entities.Magnet);
+    const magnets = findEntities(s => s instanceof Magnet, this._board);
     for (const magnet of magnets) {
       this._trackMagnet(magnet);
     }
 
     this._spawn = [...this.getPlayer().coords];
 
-    this._iteratorObjects = range(this.dimensions.width * this.dimensions.height).map(i =>
-      this._initializeIteratorObject({}),
+    this._iteratorObjects = Array.from(
+      map(i => this._initializeIteratorObject({}), range(dimensions.width * dimensions.height)),
     );
   }
 
@@ -170,7 +168,7 @@ export default class Board {
   tick(playerDirection) {
     const scheduled = !playerDirection;
 
-    for (const entity of this._entityList) {
+    for (const entity of this._boardList) {
       if (entity instanceof entities.Player) {
         if (playerDirection) {
           this.move(this.getPlayer(), playerDirection);
@@ -181,14 +179,18 @@ export default class Board {
         (!scheduled && entity.opportunistic)
       ); // not every entity thinks every tick
       if (!sleeping) {
-        sleeping = this._theMagneticFields(entity); // stuck entities can't think
+        const stuck = this._theMagneticFields(entity);
+        if (!(entity instanceof entities.Player)) {
+          entity.state.stuck = stuck;
+        }
       }
       if (entity.think && !sleeping) {
         entity.think(this._entityApi, entities);
       }
     }
 
-    this._entityList.purge();
+    this._boardList.purge();
+    this._fieldsList.purge();
 
     this._tickCounter = (this._tickCounter + 1) % 105;
     if (this.recording) {
@@ -208,43 +210,40 @@ export default class Board {
 
   at(coords, direction = null, distance = 1) {
     return (
-      at(this._board, coords, direction, distance) || at(this._fields, coords, direction, distance)
+      at(this._board, coords, direction, distance) ||
+      at(this._statics, coords, direction, distance) ||
+      at(this._fields, coords, direction, distance)
     );
   }
 
   setAt(coords, newEntity, direction = null, distance = 1) {
     const currentEntity = this.at(coords);
     invariant(!(currentEntity && currentEntity.isStatic), 'Tried to overwrite a static entity!');
-    setAt(this._board, coords, newEntity, direction, distance);
+
+    setAt(this._board, coords, newEntity);
   }
 
   getPlayer() {
-    return this._entityList.getPlayer(0);
+    return this._boardList.getPlayer(0);
+  }
+
+  findNearestPlayer(entity) {
+    let nearestPlayer = null;
+    let nearestPlayerDist = Infinity;
+    for (const player of this.players()) {
+      const dist = manhattan(entity.coords, player.coords);
+      if (dist < nearestPlayerDist) {
+        nearestPlayerDist = dist;
+        nearestPlayer = player;
+      }
+    }
   }
 
   respawnPlayer() {
     const coords = this.spiralSearch(this._spawn, coords => this.at(coords) === null);
     const { Player } = entities;
-    const newPlayer = this._entityList.set(0, new Player(coords));
+    const newPlayer = this._boardList.set(0, new Player(coords));
     this.setAt(coords, newPlayer);
-  }
-
-  seek(entity) {
-    const [x, y] = entity.coords;
-    const [px, py] = this.getPlayer().coords;
-    const dx = x - px;
-    const dy = y - py;
-    const xDist = Math.abs(dx);
-    const yDist = Math.abs(dy);
-    let direction;
-    if (xDist > yDist) {
-      direction = directionsByOrientation.HORIZONTAL[dx > 0 ? 0 : 1];
-    } else if (yDist > xDist) {
-      direction = directionsByOrientation.VERTICAL[dy > 0 ? 0 : 1];
-    } else {
-      direction = randomDirection(this._random);
-    }
-    this.move(entity, direction);
   }
 
   canMove(entity, direction) {
@@ -252,6 +251,10 @@ export default class Board {
   }
 
   move(entity, direction) {
+    if (entity.state.stuck) {
+      return false;
+    }
+
     let targetEntity = this.at(entity.coords, direction);
 
     if (entity.roundness !== 5 && targetEntity && targetEntity.roundness !== 5) {
@@ -269,12 +272,7 @@ export default class Board {
   eat(entity, targetEntity) {
     invariant(targetEntity, 'Could not eat entity. It did not exist!');
     if (!this._dryRun) {
-      if (targetEntity instanceof entities.Player) {
-        this.once('tick', () => {
-          this._emit('death');
-        });
-      }
-      this._destroy(targetEntity);
+      this.destroy(targetEntity);
     }
   }
 
@@ -293,15 +291,44 @@ export default class Board {
     return shoved;
   }
 
-  replace(entity, replaceWith) {
-    const newEntity = this._entityList.replace(entity, replaceWith);
-    this.setAt(newEntity.coords, newEntity);
-    return newEntity;
+  _getList(entity) {
+    invariant(!entity.isStatic, 'Static entity list should be irrelevant');
+    return entity instanceof entities.Field ? this._fieldsList : this._boardList;
   }
 
-  _destroy(entity) {
-    this._entityList.destroy(entity);
-    this.setAt(entity.coords, null);
+  _get2dArray(entity) {
+    invariant(!entity.isStatic, 'Static entity list should be irrelevant');
+    return entity instanceof entities.Field ? this._fields : this._board;
+  }
+
+  replace(sourceEntity, replaceWith) {
+    const destIsEntity = replaceWith instanceof Base;
+    const sourceList = this._getList(sourceEntity);
+    const destList = destIsEntity ? this._getList(replaceWith) : null;
+
+    if (!destIsEntity || sourceList === destList) {
+      return sourceList.replace(sourceEntity, replaceWith);
+    } else {
+      const targetEntity = replaceWith;
+      const sourceBoard = this._get2dArray(sourceEntity);
+      const destBoard = this._get2dArray(targetEntity);
+
+      setAt(sourceBoard, sourceEntity.coords, sourceList.destroy(sourceEntity));
+      return setAt(destBoard, targetEntity.coords, destList.add(targetEntity));
+    }
+  }
+
+  destroy(entity) {
+    if (entity instanceof entities.Player) {
+      this.once('tick', () => {
+        this._emit('death');
+      });
+    }
+
+    invariant(!entity.isStatic, 'Tried to overwrite a static entity!');
+
+    this._getList(entity).destroy(entity);
+    setAt(this._get2dArray(entity), entity.coords, null);
   }
 
   _interact(entity, direction, dryRun = false) {
@@ -402,7 +429,7 @@ export default class Board {
         possibleTarget instanceof entities.Player &&
         this.at(entity.coords, direction) === null
       ) {
-        this.move(entity, direction);
+        this._move(entity, direction);
       } else if (
         possibleTarget instanceof entities.Magnet &&
         aligned(possibleTarget.orientation, direction) &&
@@ -414,7 +441,7 @@ export default class Board {
           !entityIsMagnet ||
           (entityIsMagnet && entity.orientation !== possibleTarget.orientation)
         ) {
-          this.move(entity, direction);
+          this._move(entity, direction);
         }
       }
     });
@@ -452,9 +479,11 @@ export default class Board {
 
   _cloneBoard(board, pred) {
     return board.map(row => [
-      ...row.map(
-        entity => (entity && pred(entity) ? entity.cloneWithState({ board: this }) : null),
-      ),
+      ...row.map(entity => {
+        const entityState = new EntityState();
+        entityState.board = this;
+        return entity && pred(entity) ? entity.cloneWithState(entityState) : null;
+      }),
     ]);
   }
   _filterBoard(board, predicate) {
@@ -524,12 +553,16 @@ export default class Board {
     return obj;
   }
 
+  *players() {
+    yield* this._boardList.players();
+  }
+
   *entities() {
-    yield* this._entityList;
+    yield* this._boardList;
   }
 
   *statics() {
-    yield* this._statics;
+    yield* this._staticsList;
   }
 
   *fields() {

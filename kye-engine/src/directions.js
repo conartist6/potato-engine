@@ -90,6 +90,7 @@ export function setAt(board, coords, newValue, direction = null, distance = 1) {
     const atY = y + dy * distance;
     board[atY][atX] = newValue;
   }
+  return newValue;
 }
 
 export function inBoard(board, [x, y], direction = null, distance = 1) {
@@ -136,6 +137,39 @@ export function randomDirection(random, orientation = null) {
   } else {
     return directionsByOrientation[orientation][random.nextInt(0, 1)];
   }
+}
+
+export function randomOrientation(random) {
+  return orientations[random.nextInt(0, 1)];
+}
+
+export function towards(fromCoords, toCoords, random) {
+  const [fromX, fromY] = fromCoords;
+  const [toX, toY] = toCoords;
+  const dx = fromX - toX;
+  const dy = fromY - toY;
+  const xDist = Math.abs(dx);
+  const yDist = Math.abs(dy);
+  let direction;
+
+  let orientation;
+  if (xDist > yDist) {
+    orientation = 'HORIZONTAL';
+  } else if (yDist > xDist) {
+    orientation = 'VERTICAL';
+  } else {
+    orientation = randomOrientation(random);
+  }
+  const delta = orientation === 'HORIZONTAL' ? xDist : yDist;
+  direction = directionsByOrientation[orientation][delta > 0 ? 0 : 1];
+}
+
+export function manhattan(fromCoords, toCoords) {
+  const { abs } = Math;
+  const [fromX, fromY] = fromCoords;
+  const [toX, toY] = toCoords;
+
+  return abs(fromX - toX) + abs(fromY - toY);
 }
 
 export function getDeflections(fromCoords, direction, toRoundess) {

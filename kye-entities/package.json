@@ -2,9 +2,12 @@
   "name": "kye-entities",
   "version": "3.1.0-alpha.4",
   "license": "MIT",
-  "sideEffects": ["./src/index.js"],
+  "sideEffects": [
+    "./src/index.js"
+  ],
   "dependencies": {
-    "immutable": "^3.8.2"
+    "immutable": "^3.8.2",
+    "iter-tools": "github:conartist6/iter-tools"
   },
   "peerDependencies": {
     "kye-engine": "3.1.0-alpha.4"

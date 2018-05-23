@@ -1,25 +1,28 @@
 import Thinker from 'kye-engine/lib/entities/thinker';
-import range from 'lodash/range';
 
 /**
  * A white hole is not a new entity type, it is merely a black hole which is digesting.
  **/
 export default class WhiteHole extends Thinker {
-  constructor() {
-    super(...arguments);
-    this.fullFor = 4;
+  constructor(coords, attribute = 4, ...args) {
+    super(coords, attribute, ...args);
   }
 
   think(board) {
     const { coords } = this;
-    this.fullFor--;
-    if (this.fullFor === 0) {
+
+    if (this.fullFor === 1) {
       const { BlackHole } = board.entities;
-      board.replace(this, new BlackHole(this.coords));
+      this.replace(new BlackHole(this.coords));
     }
+    this.attribute--;
   }
 
-  get freqency() {
+  get fullFor() {
+    return this.attribute;
+  }
+
+  get frequency() {
     return 5;
   }
 

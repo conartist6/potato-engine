@@ -1,3 +1,15 @@
+export class EntityState {
+  constructor(entityState) {
+    if (entityState) {
+      Object.assign(this, entityState);
+    }
+  }
+  clone() {
+    const EntityState = this.constructor;
+    return new EntityState(this);
+  }
+}
+
 export default class Base {
   constructor(coords, attribute, state) {
     this.coords = coords;
@@ -40,39 +52,50 @@ export default class Base {
     return 5;
   }
 
+  get content() {
+    return null;
+  }
+
   get board() {
     return this.state && this.state.board;
   }
 
+  get random() {
+    return this.board && this.board.random;
+  }
+
+  get entities() {
+    return this.board && this.board.entities;
+  }
+
   clone() {
     const EntityType = this.constructor;
-    return new EntityType([...this.coords], this.attribute, this.state && { ...this.state });
+    return new EntityType([...this.coords], this.attribute, this.state && this.state.clone());
   }
 
   cloneWithAttribute(attribute) {
     attribute = attribute == null ? this.attribute : attribute;
     const EntityType = this.constructor;
-    return new EntityType([...this.coords], attribute, this.state && { ...this.state });
+    return new EntityType([...this.coords], attribute, this.state && this.state.clone());
   }
 
-  cloneWithState(state = {}) {
-    state = { ...this.state, ...state };
+  cloneWithState(state) {
     const EntityType = this.constructor;
     return new EntityType([...this.coords], this.attribute, state);
   }
 
   /* Board convenience methods */
 
-  replace(attribute) {
-    this.board.replace(this, attribute);
+  replace(replaceWith) {
+    this.board.replace(this, replaceWith);
   }
 
   eat(direction) {
     this.board.eat(this, direction);
   }
 
-  seek() {
-    this.board.seek(this);
+  findNearestPlayer() {
+    return this.board.findNearestPlayer(this);
   }
 
   shove(direction) {
@@ -81,5 +104,9 @@ export default class Base {
 
   move(direction) {
     return this.board.move(this, direction);
+  }
+
+  destroy() {
+    this.board.destroy(this);
   }
 }

@@ -1,6 +1,6 @@
 import Base from 'kye-engine/lib/entities/base';
-import { Set } from 'immutable';
-import range from 'lodash/range';
+import { Seq } from 'immutable';
+import { range } from 'iter-tools';
 
 export default class Wall extends Base {
   isStatic() {
@@ -15,7 +15,8 @@ export default class Wall extends Base {
     return Number(this.attribute);
   }
 }
-Wall.attributesBySymbol = Set(range(10))
-  .map(num => String(num))
+Wall.attributesBySymbol = Seq.Set(range(10))
+  .toKeyedSeq()
+  .mapKeys(num => String(num))
   .toMap();
 Wall.__name = 'Wall'; // uglify killin' me

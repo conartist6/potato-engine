@@ -6,6 +6,7 @@
     "event-emitter": "^0.3.5",
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
+    "iter-tools": "github:conartist6/iter-tools",
     "prando": "^3.0.3"
   },
   "devDependencies": {
@@ -16,9 +17,10 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "broccoli": "^1.1.4",
+    "broccoli-babel-transpiler": "^6.1.4",
     "broccoli-funnel": "^2.0.1",
     "broccoli-merge-trees": "^3.0.0",
-    "broccoli-babel-transpiler": "^6.1.4",
+    "broccoli-rollup": "^2.1.0",
     "rimraf": "^2.6.2"
   },
   "watch": {

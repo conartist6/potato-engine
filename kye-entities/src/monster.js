@@ -11,27 +11,37 @@ export default class Monster extends Interactor {
     return true;
   }
 
-  think(board) {
-    const { coords } = this;
-    if (board.random.nextBoolean()) {
-      board.seek(this);
+  get content() {
+    return this.symbol;
+  }
+
+  think() {
+    const { random, board, entities } = this;
+    const nearestPlayer = this.findNearestPlayer();
+
+    if (random.nextBoolean() && nearestPlayer) {
+      const direction = towards(this.coords, nearestPlayer.coords, random);
+
+      if (!(board.at(this.coords, direction) instanceof entities.BlackHole)) {
+        board.move(direction);
+      }
     } else {
-      board.move(this, randomDirection(board.random));
+      board.move(this, randomDirection(random));
     }
   }
 
-  eatPlayers(board, targetEntity) {
+  eatPlayer(board, targetEntity) {
     if (targetEntity instanceof board.entities.Player) {
       this.eat(targetEntity);
     }
   }
 
   interact() {
-    this.eatPlayers(...arguments);
+    this.eatPlayer(...arguments);
   }
 
   react() {
-    this.eatPlayers(...arguments);
+    this.eatPlayer(...arguments);
   }
 
   get type() {

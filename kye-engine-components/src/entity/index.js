@@ -6,18 +6,6 @@ import e from 'kye-engine/lib/entities';
 
 import './entity.css';
 
-const styledEntities = Set([
-  e.Player,
-  e.Block,
-  e.Rocky,
-  e.Sentry,
-  e.Slider,
-  e.Wall,
-  e.Edible,
-  e.Diamond,
-  e.Magnet,
-]);
-
 export default class Entity extends Component {
   constructor() {
     super();
@@ -35,6 +23,7 @@ export default class Entity extends Component {
 
     return (
       this.props.entity !== nextProps.entity ||
+      this.props.attribute !== nextProps.attribute ||
       this.props.x !== nextProps.x ||
       this.props.y !== nextProps.y
     );
@@ -60,9 +49,7 @@ export default class Entity extends Component {
         // Ideally css calc could be used with css attr, and this would be unneccesary.
         style={{ top: `${y * 20}px`, left: `${x * 20}px` }}
       >
-        <div className={cx(classNames)}>
-          {styledEntities.has(entity.constructor) ? null : entity.symbol}
-        </div>
+        <div className={cx(classNames)}>{entity.content}</div>
       </div>
     );
   }

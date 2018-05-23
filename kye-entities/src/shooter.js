@@ -11,6 +11,10 @@ export default class Shooter extends Thinker {
     return 7;
   }
 
+  get content() {
+    return this.symbol;
+  }
+
   think() {}
 }
 Shooter.attributesBySymbol = Map({ A: null });

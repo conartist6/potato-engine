@@ -98,7 +98,7 @@ export default class Board {
     this._statics = findEntities(level.board, s => s && s.isStatic);
     for (const staticEntity of this._statics) {
       const [x, y] = staticEntity.coords;
-      this._board[y][x] = staticEntity;
+      this._board[y][x] = staticEntity; // statics also live on the board.
     }
     this._fieldsList = findEntities(level.board, s => s instanceof entities.Field).map(field => {
       const [x, y] = field.coords;
@@ -213,6 +213,8 @@ export default class Board {
   }
 
   setAt(coords, newEntity, direction = null, distance = 1) {
+    const currentEntity = this.at(coords);
+    invariant(!(currentEntity && currentEntity.isStatic), 'Tried to overwrite a static entity!');
     setAt(this._board, coords, newEntity, direction, distance);
   }
 
@@ -309,21 +311,25 @@ export default class Board {
     if (!targetEntity) {
       return true; // for canMove
     }
-    if (!entity instanceof entities.Interactor || targetEntity.isStatic) {
+    if (!entity instanceof entities.Interactor) {
       return false;
     }
     this._dryRun = dryRun;
     let moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
-    const eaten = targetEntity.state.willBeDeleted;
-    const newTargetEntity = this.at(coords, direction);
-    const reactingEntity = eaten ? targetEntity : newTargetEntity;
 
-    if (reactingEntity instanceof entities.Interactor) {
-      // If you shove something, it isn't next to you anymore. It can't do anything to you.
-      // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
-      reactingEntity.react(this._entityApi, newTargetEntity, flip(direction));
-    } else if (reactingEntity instanceof entities.Field) {
-      moveCanceled = reactingEntity.enter(this._entityApi, entity, flip(direction)) || moveCanceled;
+    const newTargetEntity = this.at(coords, direction);
+    if (!targetEntity.isStatic) {
+      const eaten = targetEntity.state.willBeDeleted;
+      const reactingEntity = eaten ? targetEntity : newTargetEntity;
+
+      if (reactingEntity instanceof entities.Interactor) {
+        // If you shove something, it isn't next to you anymore. It can't do anything to you.
+        // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
+        reactingEntity.react(this._entityApi, newTargetEntity, flip(direction));
+      } else if (reactingEntity instanceof entities.Field) {
+        moveCanceled =
+          reactingEntity.enter(this._entityApi, entity, flip(direction)) || moveCanceled;
+      }
     }
 
     this._dryRun = null;

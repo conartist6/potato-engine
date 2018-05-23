@@ -12,7 +12,7 @@ export default class Wall extends Base {
   }
 
   get roundness() {
-    return this.attribute;
+    return Number(this.attribute);
   }
 }
 Wall.attributesBySymbol = Set(range(10))

@@ -160,8 +160,8 @@ export function towards(fromCoords, toCoords, random) {
   } else {
     orientation = randomOrientation(random);
   }
-  const delta = orientation === 'HORIZONTAL' ? xDist : yDist;
-  direction = directionsByOrientation[orientation][delta > 0 ? 0 : 1];
+  const delta = orientation === 'HORIZONTAL' ? dx : dy;
+  return directionsByOrientation[orientation][delta > 0 ? 0 : 1];
 }
 
 export function manhattan(fromCoords, toCoords) {

@@ -1,6 +1,6 @@
 import Interactor from 'kye-engine/lib/entities/interactor';
 import { Map } from 'immutable';
-import { randomDirection } from 'kye-engine/lib/directions';
+import { randomDirection, manhattan, towards } from 'kye-engine/lib/directions';
 
 export default class Monster extends Interactor {
   get frequency() {
@@ -23,11 +23,24 @@ export default class Monster extends Interactor {
       const direction = towards(this.coords, nearestPlayer.coords, random);
 
       if (!(board.at(this.coords, direction) instanceof entities.BlackHole)) {
-        board.move(direction);
+        this.move(direction);
       }
     } else {
-      board.move(this, randomDirection(random));
+      this.move(randomDirection(random));
     }
+  }
+
+  findNearestPlayer() {
+    let nearestPlayer = null;
+    let nearestPlayerDist = Infinity;
+    for (const player of this.board.players()) {
+      const dist = manhattan(this.coords, player.coords);
+      if (dist < nearestPlayerDist) {
+        nearestPlayerDist = dist;
+        nearestPlayer = player;
+      }
+    }
+    return nearestPlayer;
   }
 
   eatPlayer(board, targetEntity) {

@@ -94,10 +94,6 @@ export default class Base {
     this.board.eat(this, direction);
   }
 
-  findNearestPlayer() {
-    return this.board.findNearestPlayer(this);
-  }
-
   shove(direction) {
     return this.board.shove(this, direction);
   }

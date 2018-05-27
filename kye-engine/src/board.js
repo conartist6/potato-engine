@@ -20,7 +20,6 @@ import {
   leftOf,
   rightOf,
   flip,
-  manhattan,
   moveCoordsInDirection,
   randomDirection,
   randomOrientation,
@@ -80,12 +79,12 @@ export default class Board {
         'shove',
         'move',
         'eat',
-        'findNearestPlayer',
         'replace',
         'at',
         'setAt',
         'once',
         'spiralSearch',
+        'players',
       ])
         .toSetSeq()
         .toMap()
@@ -225,18 +224,6 @@ export default class Board {
 
   getPlayer() {
     return this._boardList.getPlayer(0);
-  }
-
-  findNearestPlayer(entity) {
-    let nearestPlayer = null;
-    let nearestPlayerDist = Infinity;
-    for (const player of this.players()) {
-      const dist = manhattan(entity.coords, player.coords);
-      if (dist < nearestPlayerDist) {
-        nearestPlayerDist = dist;
-        nearestPlayer = player;
-      }
-    }
   }
 
   respawnPlayer() {

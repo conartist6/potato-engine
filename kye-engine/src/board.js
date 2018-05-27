@@ -61,6 +61,7 @@ const recordingDirectionSymbols = {
 export default class Board {
   constructor(level, dimensions, options) {
     const { Field, Magnet } = entities;
+
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
     if (options.record) {

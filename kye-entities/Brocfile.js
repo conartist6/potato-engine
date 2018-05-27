@@ -3,18 +3,25 @@ const MergeTrees = require('broccoli-merge-trees');
 const esTranspiler = require('broccoli-babel-transpiler');
 const path = require('path');
 
-let js = esTranspiler('src', {
+let mjs = 'src';
+mjs = esTranspiler(mjs, {
   filterExtensions: ['js'],
   plugins: ['check-es2015-constants', 'transform-object-rest-spread'],
 });
-js = new Funnel(js, {
+mjs = new Funnel(mjs, {
   destDir: '',
+  include: ['**/*.js'],
   getDestinationPath(relativePath) {
     return relativePath.replace(/\.js$/, '.mjs');
   },
 });
 
-const mjs = esTranspiler('src', {
+let es = 'src';
+es = new Funnel(es, {
+  destDir: '',
+  include: ['**/*.js'],
+});
+es = esTranspiler(es, {
   filterExtensions: ['js'],
   plugins: [
     'check-es2015-constants',
@@ -23,4 +30,4 @@ const mjs = esTranspiler('src', {
   ],
 });
 
-module.exports = new MergeTrees([mjs, js]);
+module.exports = new MergeTrees([mjs, es]);

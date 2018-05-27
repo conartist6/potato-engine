@@ -39,6 +39,8 @@
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build"
   },
+  "main": "lib/index",
+  "module": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/conartist6/kye/tree/master/kye-engine-components"

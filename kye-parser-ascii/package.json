@@ -1,13 +1,12 @@
 {
-  "name": "kye-entities",
+  "name": "kye-parser-ascii",
   "version": "3.1.0-alpha.4",
   "license": "MIT",
-  "sideEffects": [
-    "./src/index.js"
-  ],
   "dependencies": {
     "immutable": "^3.8.2",
-    "iter-tools": "github:conartist6/iter-tools"
+    "invariant": "^2.2.4",
+    "iter-tools": "github:conartist6/iter-tools",
+    "prando": "^3.0.3"
   },
   "peerDependencies": {
     "kye-engine": "3.1.0-alpha.4"
@@ -32,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/conartist6/kye/tree/master/kye-entities"
+    "url": "https://github.com/conartist6/kye/tree/master/kye-parser-ascii"
   },
   "main": "lib/index",
   "module": "lib/index"

@@ -1,4 +1,5 @@
-import Campaign from './campaign';
+import Campaign from 'kye-engine/campaign';
+import { parse, serialize } from '../campaign';
 
 // From KIDS.KYE
 const TEST_CAMPAIGN = `2
@@ -51,5 +52,6 @@ Well done
 `;
 
 it('parses', () => {
-  const result = Campaign.parse(TEST_CAMPAIGN);
+  const result = parse(TEST_CAMPAIGN);
+  expect(result).to.be.instanceof(Campaign);
 });

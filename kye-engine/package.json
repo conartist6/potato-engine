@@ -23,14 +23,13 @@
     "broccoli-rollup": "^2.1.0",
     "rimraf": "^2.6.2"
   },
-  "watch": {
-    "build": "src/*.js"
-  },
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build"
   },
+  "main": "lib/index",
+  "module": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/conartist6/kye/tree/master/kye-engine"

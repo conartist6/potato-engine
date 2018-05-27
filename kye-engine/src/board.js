@@ -481,25 +481,6 @@ export default class Board {
     this._alterMagnetTracking(magnet, -1);
   }
 
-  _cloneBoard(board, pred) {
-    return board.map(row => [
-      ...row.map(entity => {
-        const entityState = new EntityState();
-        entityState.board = this;
-        return entity && pred(entity) ? entity.cloneWithState(entityState) : null;
-      }),
-    ]);
-  }
-  _filterBoard(board, predicate) {
-    for (const row of board) {
-      for (let i = 0; i < row.length; i++) {
-        if (!predicate(row[i])) {
-          row[i] = null;
-        }
-      }
-    }
-  }
-
   spiralSearch(coords, cb, maxRadius) {
     let radius = 0;
 

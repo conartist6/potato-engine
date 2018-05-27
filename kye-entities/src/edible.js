@@ -1,9 +1,14 @@
-import Interactor from 'kye-engine/lib/entities/interactor';
+import Field from 'kye-engine/lib/entities/field';
 import { Map } from 'immutable';
 
-export default class Edible extends Interactor {
-  get pushable() {
-    return false;
+export default class Edible extends Field {
+  enter(board, target) {
+    const { entities } = this;
+    if (target instanceof entities.Player) {
+      this.destroy();
+      return false;
+    }
+    return true;
   }
 }
 Edible.attributesBySymbol = Map({ e: null });

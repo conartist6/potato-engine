@@ -342,7 +342,10 @@ export default class Board {
       return false;
     }
     this._dryRun = dryRun;
-    let moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
+    let moveCanceled = false;
+    if (!(targetEntity instanceof entities.Field)) {
+      moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
+    }
 
     const newTargetEntity = this.at(coords, direction);
     if (!targetEntity.isStatic) {
@@ -421,7 +424,7 @@ export default class Board {
     }
 
     directions.forEach((direction, i) => {
-      const possibleTarget = this.at(entity.coords, direction, 2);
+      const possibleTarget = at(this._board, entity.coords, direction, 2);
 
       if (
         entity instanceof entities.Magnet &&
@@ -433,7 +436,8 @@ export default class Board {
       } else if (
         possibleTarget instanceof entities.Magnet &&
         aligned(possibleTarget.orientation, direction) &&
-        entity.pullable &&
+        !(possibleTarget instanceof entities.Player) &&
+        !possibleTarget.nonFerrous &&
         this.at(entity.coords, direction) === null
       ) {
         const entityIsMagnet = entity instanceof entities.Magnet;

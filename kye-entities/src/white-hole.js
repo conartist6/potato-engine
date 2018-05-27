@@ -18,6 +18,10 @@ export default class WhiteHole extends Thinker {
     this.attribute--;
   }
 
+  react() {
+    return this.fullFor < 4;
+  }
+
   get fullFor() {
     return this.attribute;
   }
@@ -26,12 +30,8 @@ export default class WhiteHole extends Thinker {
     return 5;
   }
 
-  get pushable() {
-    return this.fullFor === 1;
-  }
-
-  get pullable() {
-    return false;
+  get nonFerrous() {
+    return true;
   }
 }
 WhiteHole.__name = 'WhiteHole'; // uglify killin' me

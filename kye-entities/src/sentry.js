@@ -4,14 +4,15 @@ import directions, { flip } from 'kye-engine/lib/directions';
 
 export default class Sentry extends Thinker {
   think(board) {
-    board.move(this, this.direction);
+    const canMove = board.move(this, this.direction);
+    if (!canMove) {
+      this.replace(flip(this.direction));
+    }
   }
 
   interact(board, targetEntity, direction) {
-    const shoved = targetEntity.pushable && board.shove(this, direction);
-
-    this.replace(flip(this.direction));
-    return shoved;
+    board.shove(this, direction);
+    return true;
   }
 
   get frequency() {

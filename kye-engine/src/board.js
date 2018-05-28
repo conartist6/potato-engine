@@ -523,6 +523,7 @@ export default class Board {
     obj.y = null;
     obj.entity = null;
     obj.field = null;
+    obj.static = null;
     return obj;
   }
 
@@ -554,6 +555,7 @@ export default class Board {
         obj.y = row;
         obj.entity = this._board[row][col];
         obj.field = this._fields[row][col];
+        obj.static = this._statics[row][col];
 
         yield obj;
       }

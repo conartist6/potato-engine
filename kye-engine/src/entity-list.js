@@ -51,7 +51,7 @@ export default class EntityList {
     } else {
       newEntity = entity.cloneWithAttribute(replaceWith);
     }
-    return (this._list[entity.state.idx] = newEntity);
+    return (this._list[entity.state._idx] = newEntity);
   }
 
   purge() {
@@ -61,7 +61,7 @@ export default class EntityList {
         continue;
       }
       this._list[count] = this._list[i];
-      this._list[count].state.idx = count;
+      this._list[count].state._idx = count;
       count++;
     }
     this._list.length = count;

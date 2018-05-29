@@ -94,10 +94,10 @@ export default class Board {
         .toObject(),
     });
 
-    function findEntities(cb, board = level.board) {
+    function findEntities(cb) {
       return filter(entity => {
         return entity != null && cb(entity);
-      }, iterateArray2d(board));
+      }, iterateArray2d(level.board));
     }
     const state = { board: this._entityApi };
 
@@ -109,19 +109,16 @@ export default class Board {
     this._board = array2d(dimensions, null, this._boardList);
     this._fields = array2d(dimensions, null, this._fieldsList);
     this._magnetization = array2d(dimensions, 0);
+    for (const magnet of findEntities(s => s instanceof Magnet)) {
+      this._trackMagnet(magnet);
+    }
 
     this._tickCounter = 0;
     this._isInitial = true;
-    this._ate = null;
-    this._shoved = null;
-    this._dryRun = null;
     this._paused = true;
+
     this._emit = this.emit;
     this.emit = undefined;
-    const magnets = findEntities(s => s instanceof Magnet, this._board);
-    for (const magnet of magnets) {
-      this._trackMagnet(magnet);
-    }
 
     this._spawn = [...this.getPlayer().coords];
 
@@ -237,7 +234,8 @@ export default class Board {
   }
 
   canMove(entity, direction) {
-    return this._interact(entity, direction, true);
+    const target = this.at(entity.coords, direction);
+    return target == null || target instanceof entities.Field;
   }
 
   move(entity, direction) {
@@ -260,10 +258,7 @@ export default class Board {
   }
 
   eat(entity, targetEntity) {
-    invariant(targetEntity, 'Could not eat entity. It did not exist!');
-    if (!this._dryRun) {
-      this.destroy(targetEntity);
-    }
+    this.destroy(targetEntity);
   }
 
   shove(entity, direction) {
@@ -273,10 +268,8 @@ export default class Board {
       !this.at(entity.coords, direction, 2) &&
       !(pushee.isStatic || pushee instanceof entities.Field)
     ) {
-      if (!this._dryRun) {
-        this._move(pushee, direction);
-        shoved = true;
-      }
+      this._move(pushee, direction);
+      shoved = true;
     }
     return shoved;
   }
@@ -317,19 +310,20 @@ export default class Board {
   }
 
   destroy(entity) {
+    invariant(entity, 'Could not destroy entity. It did not exist!');
+    invariant(!entity.isStatic, 'Tried to overwrite a static entity!');
+
     if (entity instanceof entities.Player) {
       this.once('tick', () => {
         this._emit('death');
       });
     }
 
-    invariant(!entity.isStatic, 'Tried to overwrite a static entity!');
-
     this._getList(entity).remove(entity);
     setAt(this._get2dArray(entity), entity.coords, null);
   }
 
-  _interact(entity, direction, dryRun = false) {
+  _interact(entity, direction) {
     const { coords } = entity;
     const targetEntity = this.at(coords, direction);
 
@@ -339,7 +333,7 @@ export default class Board {
     if (!entity instanceof entities.Interactor) {
       return false;
     }
-    this._dryRun = dryRun;
+
     let moveCanceled = false;
     if (!(targetEntity instanceof entities.Field)) {
       moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
@@ -360,7 +354,6 @@ export default class Board {
       }
     }
 
-    this._dryRun = null;
     const shouldMove =
       !moveCanceled && (newTargetEntity === null || newTargetEntity instanceof entities.Field);
     return shouldMove;

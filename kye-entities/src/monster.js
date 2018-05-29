@@ -1,6 +1,6 @@
 import Interactor from 'kye-engine/lib/entities/interactor';
 import { Map } from 'immutable';
-import { randomDirection, manhattan, towards } from 'kye-engine/lib/directions';
+import directions, { randomDirection, manhattan, towards } from 'kye-engine/lib/directions';
 
 export default class Monster extends Interactor {
   get frequency() {
@@ -19,6 +19,7 @@ export default class Monster extends Interactor {
     const { random, board, entities } = this;
     const nearestPlayer = this.findNearestPlayer();
 
+    this.eatAdjacentPlayers(); // A player may have moved into our orbit. Kill it!
     if (random.nextBoolean() && nearestPlayer) {
       const direction = towards(this.coords, nearestPlayer.coords, random);
 
@@ -28,6 +29,7 @@ export default class Monster extends Interactor {
     } else {
       this.move(randomDirection(random));
     }
+    this.eatAdjacentPlayers(); // We may have moved within striking range of a player. Nom.
   }
 
   findNearestPlayer() {
@@ -43,18 +45,19 @@ export default class Monster extends Interactor {
     return nearestPlayer;
   }
 
-  eatPlayer(board, targetEntity) {
-    if (targetEntity instanceof board.entities.Player) {
-      this.eat(targetEntity);
+  eatAdjacentPlayers() {
+    let adjacentPlayer;
+    while ((adjacentPlayer = this.findAdjacentPlayer())) {
+      this.eat(adjacentPlayer);
     }
   }
 
-  interact() {
-    this.eatPlayer(...arguments);
-  }
-
-  react() {
-    this.eatPlayer(...arguments);
+  findAdjacentPlayer() {
+    const { board, entities } = this;
+    return directions.reduceRight((adjacentPlayer, direction) => {
+      const target = board.at(this.coords, direction);
+      return target instanceof entities.Player ? target : adjacentPlayer;
+    }, null);
   }
 
   get type() {

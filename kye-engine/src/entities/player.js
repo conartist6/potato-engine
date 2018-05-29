@@ -1,12 +1,16 @@
 import Interactor from './interactor';
 
 /**
- * Player is a abstract class. The engine must know which entity is the player.
- * When you define your Player entity, it must extend this class.
+ * When you define your Player entity it should extend this class since certain game
+ * rules may want to differentiate between players and non-players.
  **/
 export default class Player extends Interactor {
-  get pushable() {
-    return false;
+  interact(board, targetEntity, direction) {
+    board.shove(this, direction);
+  }
+
+  react() {
+    return true;
   }
 }
 Player.__name = 'Player'; // uglify killin' me

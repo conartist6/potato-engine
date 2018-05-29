@@ -2,9 +2,7 @@
   "name": "kye-entities",
   "version": "3.1.0-alpha.4",
   "license": "MIT",
-  "sideEffects": [
-    "./src/index.js"
-  ],
+  "sideEffects": ["./src/index.js"],
   "dependencies": {
     "immutable": "^3.8.2",
     "iter-tools": "github:conartist6/iter-tools"
@@ -35,5 +33,9 @@
     "url": "https://github.com/conartist6/kye/tree/master/kye-entities"
   },
   "main": "lib/index",
-  "module": "lib/index"
+  "module": "lib/index",
+  "author": {
+    "name": "Conrad Buck",
+    "email": "c@burningpotato.com"
+  }
 }

@@ -44,5 +44,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/conartist6/kye/tree/master/kye-engine-components"
+  },
+  "author": {
+    "name": "Conrad Buck",
+    "email": "c@burningpotato.com"
   }
 }

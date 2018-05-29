@@ -1,9 +1,9 @@
-import Interactor from 'kye-engine/lib/entities/interactor';
+import { default as BasePlayer } from 'kye-engine/lib/entities/player';
 import { Map } from 'immutable';
 
-export default class Player extends Interactor {
-  interact(board, targetEntity, direction) {
-    board.shove(this, direction);
+export default class Player extends BasePlayer {
+  get electroMagnet() {
+    return true;
   }
 }
 Player.attributesBySymbol = Map({ K: null });

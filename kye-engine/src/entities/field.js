@@ -1,10 +1,10 @@
-import Base from './base';
+import Entity from '../entity';
 
 /**
  * Fields are immobile, and are the only game entities which other objects can exist on top of.
  * Fields can have effects on entities.
  **/
-export default class Field extends Base {
+export default class Field extends Entity {
   /**
    * Triggered when an entity enters the field.
    * If the entity moves from one field to another of the same type this will not trigger.

@@ -7,7 +7,7 @@ export default class Magnet extends MagnetBase {
   }
 
   get orientation() {
-    return this.attribute;
+    return this.__attribute;
   }
 }
 Magnet.attributesBySymbol = Map({ S: 'HORIZONTAL', s: 'VERTICAL' });

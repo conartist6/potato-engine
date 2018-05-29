@@ -1,13 +1,13 @@
-import Base from 'kye-engine/lib/entities/base';
+import Entity from 'kye-engine/lib/entity';
 import { Map } from 'immutable';
 
-export default class Block extends Base {
+export default class Block extends Entity {
   get isRound() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   get roundness() {
-    return this.attribute === 'ROUND' ? 0 : 5;
+    return this.__attribute === 'ROUND' ? 0 : 5;
   }
 
   get frequency() {

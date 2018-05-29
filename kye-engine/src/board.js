@@ -2,17 +2,17 @@ import { Seq } from 'immutable';
 import makeEmitter from 'event-emitter';
 import invariant from 'invariant';
 import allOff from 'event-emitter/all-off';
-import Prando from 'prando';
+import Random from './random';
 import BoardList from './board-list';
 import EntityList from './entity-list';
-import Base, { EntityState } from './entities/base';
+import Entity, { EntityState } from './entity';
 import { filter, map, range } from 'iter-tools';
 
 import {
   aligned,
   at,
   setAt,
-  inBoard,
+  inArray2d,
   copyCoords,
   directions,
   getDeflections,
@@ -58,6 +58,9 @@ const recordingDirectionSymbols = {
   DOWN: 'd',
 };
 
+/**
+ * Board: STUB
+ **/
 export default class Board {
   constructor(level, dimensions, options) {
     const { Field, Magnet } = entities;
@@ -68,7 +71,7 @@ export default class Board {
       this.recording = [];
     }
 
-    this._random = new Prando(level.seed);
+    this._random = new Random(level.seed);
 
     this._entityApi = Object.freeze({
       entities,
@@ -285,7 +288,7 @@ export default class Board {
   }
 
   replace(sourceEntity, replaceWith) {
-    const destIsEntity = replaceWith instanceof Base;
+    const destIsEntity = replaceWith instanceof Entity;
     const sourceList = this._getList(sourceEntity);
     const destList = destIsEntity ? this._getList(replaceWith) : null;
 
@@ -296,7 +299,8 @@ export default class Board {
       const sourceBoard = this._get2dArray(sourceEntity);
       const destBoard = this._get2dArray(targetEntity);
 
-      setAt(sourceBoard, sourceEntity.coords, sourceList.remove(sourceEntity));
+      sourceList.remove(sourceEntity);
+      setAt(sourceBoard, sourceEntity.coords, null);
       return setAt(destBoard, targetEntity.coords, destList.add(targetEntity));
     }
   }
@@ -363,7 +367,7 @@ export default class Board {
     const targetEntity = this.at(entity.coords, direction);
 
     // Does the roundness of the object I hit permit me only a particular direction?
-    const directions = getDeflections(entity.coords, direction, targetEntity.roundness);
+    const directions = getDeflections(direction, targetEntity.roundness);
 
     if (directions) {
       const [direction1, direction2] = directions;
@@ -489,7 +493,7 @@ export default class Board {
       moveCoordsInDirection(spiralCoords, 'DOWN_RIGHT');
       for (const direction of directions) {
         for (let i = 0; i < radius * 2; i++) {
-          if (inBoard(this._board, spiralCoords) && cb(spiralCoords)) {
+          if (inArray2d(this._board, spiralCoords) && cb(spiralCoords)) {
             return spiralCoords;
           }
           moveCoordsInDirection(spiralCoords, direction);

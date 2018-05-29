@@ -1,9 +1,9 @@
-import Base from 'kye-engine/lib/entities/base';
+import Entity from 'kye-engine/lib/entity';
 import { Seq } from 'immutable';
 import { range } from 'iter-tools';
 
-export default class Wall extends Base {
-  isStatic() {
+export default class Wall extends Entity {
+  get isStatic() {
     return true;
   }
 
@@ -12,7 +12,7 @@ export default class Wall extends Base {
   }
 
   get roundness() {
-    return Number(this.attribute);
+    return Number(this.__attribute);
   }
 }
 Wall.attributesBySymbol = Seq.Set(range(10))

@@ -18,7 +18,7 @@ export default class Shooter extends Thinker {
   }
 
   get direction() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   get projectileClass() {
@@ -31,7 +31,7 @@ export default class Shooter extends Thinker {
   }
 
   think(board) {
-    this.attribute = rightOf(this.attribute);
+    this.__attribute = rightOf(this.__attribute);
     this._timer++;
 
     const { Slider } = this.entities;

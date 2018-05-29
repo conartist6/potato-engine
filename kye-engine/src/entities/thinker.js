@@ -1,10 +1,9 @@
 import Interactor from './interactor';
 
+/**
+ * Thinker: STUB
+ **/
 export default class Thinker extends Interactor {
-  get frequency() {
-    return 1;
-  }
-
   /**
    * An opportunistic thinker gets to make a move if the player makes one.
    */

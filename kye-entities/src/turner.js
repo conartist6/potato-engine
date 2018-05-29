@@ -13,7 +13,7 @@ export default class Turner extends Interactor {
   }
 
   get turn() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   get content() {

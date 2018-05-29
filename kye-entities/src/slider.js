@@ -5,7 +5,7 @@ import directions from 'kye-engine/lib/directions';
 
 export default class Slider extends Thinker {
   get direction() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   think(board) {

@@ -1,6 +1,11 @@
-import Base from './base';
+import Entity from '../entity';
 
-export default class Interactor extends Base {
+/**
+ * Interactors are entities which have logic surrounding collisions. If they attempt to
+ * move into a square occupied by another entitity, {@link interact} is triggered.
+ * If another entity tries to move into their square, {@link react} is triggered.
+ **/
+export default class Interactor extends Entity {
   /**
    * Triggered when you are colliding with another entity.
    * If you do nothing the entity will continue to be in your way. You will not move.

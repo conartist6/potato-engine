@@ -16,7 +16,7 @@ import Turner from './turner';
 import Wall from './wall';
 import WhiteHole from './white-hole';
 
-import { entities } from 'kye-engine';
+import { entityTypeRegistry } from 'kye-engine';
 
 [
   BlackHole,
@@ -36,6 +36,6 @@ import { entities } from 'kye-engine';
   Turner,
   Wall,
   WhiteHole,
-].forEach(EntityType => entities.addEntityType(EntityType));
+].forEach(EntityType => entityTypeRegistry.register(EntityType));
 
-export default entities;
+export default entityTypeRegistry;

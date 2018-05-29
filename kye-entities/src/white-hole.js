@@ -15,7 +15,7 @@ export default class WhiteHole extends Thinker {
       const { BlackHole } = board.entities;
       this.replace(new BlackHole(this.coords));
     }
-    this.attribute--;
+    this.__attribute--;
   }
 
   react() {
@@ -23,7 +23,7 @@ export default class WhiteHole extends Thinker {
   }
 
   get fullFor() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   get frequency() {

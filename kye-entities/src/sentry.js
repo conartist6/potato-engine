@@ -20,7 +20,7 @@ export default class Sentry extends Thinker {
   }
 
   get direction() {
-    return this.attribute;
+    return this.__attribute;
   }
 }
 Sentry.attributesBySymbol = Map({ U: 'UP', D: 'DOWN', L: 'LEFT', R: 'RIGHT' });

@@ -7,7 +7,7 @@ export default class Timer extends Thinker {
     this.timelet = 5;
   }
   get timer() {
-    return this.attribute;
+    return this.__attribute;
   }
 
   get frequency() {

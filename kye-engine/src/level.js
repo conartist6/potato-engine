@@ -1,9 +1,8 @@
 import invariant from 'invariant';
 
-export const LEVEL_HEADER_LINES = 3;
-const FIRST_LAST_ROW = /[1-9]{3,}/;
-const ROW = /[1-9].+[1-9]/;
-
+/**
+ * Level: STUB
+ **/
 export default class Level {
   constructor(header, dimensions, board, index = null, seed = null) {
     this.header = header;

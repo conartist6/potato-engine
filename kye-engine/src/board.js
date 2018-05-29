@@ -81,6 +81,7 @@ export default class Board {
         'move',
         'eat',
         'replace',
+        'add',
         'at',
         'setAt',
         'once',
@@ -110,6 +111,7 @@ export default class Board {
     this._magnetization = array2d(dimensions, 0);
 
     this._tickCounter = 0;
+    this._isInitial = true;
     this._ate = null;
     this._shoved = null;
     this._dryRun = null;
@@ -174,10 +176,9 @@ export default class Board {
           this.move(this.getPlayer(), playerDirection);
         }
       }
-      let sleeping = !(
-        this._tickCounter % entity.frequency === 0 ||
-        (!scheduled && entity.opportunistic)
-      ); // not every entity thinks every tick
+      let sleeping =
+        this._isInitial || // entities start asleep
+        !(this._tickCounter % entity.frequency === 0 || (!scheduled && entity.opportunistic)); // not every entity thinks every tick
       if (!sleeping) {
         const stuck = this._theMagneticFields(entity);
         if (!(entity instanceof entities.Player)) {
@@ -205,6 +206,7 @@ export default class Board {
       }
     }
 
+    this._isInitial = false;
     this._emit('tick');
   }
 
@@ -304,6 +306,14 @@ export default class Board {
       setAt(sourceBoard, sourceEntity.coords, sourceList.destroy(sourceEntity));
       return setAt(destBoard, targetEntity.coords, destList.add(targetEntity));
     }
+  }
+
+  add(entity) {
+    invariant(!entity.isStatic, 'Tried to create a static entity!');
+
+    const newEntity = this._getList(entity).add(entity);
+    setAt(this._get2dArray(entity), entity.coords, newEntity);
+    return newEntity;
   }
 
   destroy(entity) {

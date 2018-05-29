@@ -377,4 +377,9 @@ $border-radius: 7px;
     background-size: 2px 2px;
     background-position: 0 0, 0 1px, 1px -1px, -1px 0px;
   }
+
+  &.shooter,
+  &.rocky-shooter {
+    @include directional();
+  }
 }

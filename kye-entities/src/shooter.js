@@ -1,10 +1,12 @@
 import Thinker from 'kye-engine/lib/entities/thinker';
 import { Map } from 'immutable';
 
+import { rightOf, getCoordsInDirection } from 'kye-engine/lib/directions';
+
 export default class Shooter extends Thinker {
-  constructor(...args) {
-    super(...args);
-    this.direction = 'UP';
+  constructor(coords, attribute, ...args) {
+    super(coords, 'UP', ...args);
+    this._timer = 0;
   }
 
   get frequency() {
@@ -12,10 +14,35 @@ export default class Shooter extends Thinker {
   }
 
   get content() {
-    return this.symbol;
+    return 'F';
   }
 
-  think() {}
+  get direction() {
+    return this.attribute;
+  }
+
+  get projectileClass() {
+    return this.entities.Slider;
+  }
+
+  makeProjectile() {
+    const Projectile = this.projectileClass;
+    return new Projectile(getCoordsInDirection(this.coords, this.direction), this.direction);
+  }
+
+  think(board) {
+    this.attribute = rightOf(this.attribute);
+    this._timer++;
+
+    const { Slider } = this.entities;
+    const [x, y] = this.coords;
+    const target = board.at(this.coords, this.direction);
+
+    if (this._timer > y && target == null) {
+      board.add(this.makeProjectile());
+      this._timer = 0;
+    }
+  }
 }
-Shooter.attributesBySymbol = Map({ A: null });
+Shooter.attributesBySymbol = Map({ A: 'UP' });
 Shooter.__name = 'Shooter'; // uglify killin' me

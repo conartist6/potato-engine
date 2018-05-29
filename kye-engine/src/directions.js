@@ -64,6 +64,12 @@ export function moveCoordsInDirection(coords, direction, distance = 1) {
   coords[1] = coords[1] + deltaCoords[1] * distance;
 }
 
+export function getCoordsInDirection([x, y], direction, distance = 1) {
+  const coords = [x, y];
+  moveCoordsInDirection(coords, direction);
+  return coords;
+}
+
 export function at(board, coords, direction = null, distance = 1) {
   if (!inBoard(board, coords, direction, distance)) {
     return null;
@@ -115,6 +121,10 @@ export function coordsAreEqual(fromCoords, toCoords, direction) {
   return fromCoords[0] + dx === toCoords[0] && fromCoords[1] + dy === toCoords[1];
 }
 
+export function frontLeftOf(direction) {
+  return allDirections[(indexesByDirection[direction] + 7) % 8];
+}
+
 export function leftOf(direction) {
   return allDirections[(indexesByDirection[direction] + 6) % 8];
 }
@@ -127,8 +137,16 @@ export function rightOf(direction) {
   return allDirections[(indexesByDirection[direction] + 2) % 8];
 }
 
+export function frontRightOf(direction) {
+  return allDirections[(indexesByDirection[direction] + 1) % 8];
+}
+
 export function aligned(orientation, direction) {
   return directionsByOrientation[orientation].includes(direction);
+}
+
+export function isCardinal(direction) {
+  return indexesByDirection[direction] % 2 === 0;
 }
 
 export function randomDirection(random, orientation = null) {

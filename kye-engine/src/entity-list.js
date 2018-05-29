@@ -39,7 +39,7 @@ export default class EntityList {
     return this._list[idx];
   }
 
-  destroy(entity) {
+  remove(entity) {
     entity.state.willBeDeleted = true;
     return null;
   }

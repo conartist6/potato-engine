@@ -40,11 +40,11 @@ export default class BoardList {
     return this._getList().replace(entity, replaceWith);
   }
 
-  destroy(entity) {
+  remove(entity) {
     if (entity instanceof entities.Player) {
       entity.state.dead = true;
     }
-    return this._getList(entity).destroy(entity);
+    return this._getList(entity).remove(entity);
   }
 
   purge() {

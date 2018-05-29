@@ -39,7 +39,7 @@ export default class Shooter extends Thinker {
     const target = board.at(this.coords, this.direction);
 
     if (this._timer > y && target == null) {
-      board.add(this.makeProjectile());
+      board.create(this.makeProjectile());
       this._timer = 0;
     }
   }

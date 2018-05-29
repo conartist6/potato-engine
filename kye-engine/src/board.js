@@ -76,12 +76,12 @@ export default class Board {
       random: this._random,
       emit: (...args) => this._reemit(...args),
       ...Seq.Indexed([
-        'destroy',
         'shove',
         'move',
         'eat',
         'replace',
-        'add',
+        'create',
+        'destroy',
         'at',
         'setAt',
         'once',
@@ -303,12 +303,12 @@ export default class Board {
       const sourceBoard = this._get2dArray(sourceEntity);
       const destBoard = this._get2dArray(targetEntity);
 
-      setAt(sourceBoard, sourceEntity.coords, sourceList.destroy(sourceEntity));
+      setAt(sourceBoard, sourceEntity.coords, sourceList.remove(sourceEntity));
       return setAt(destBoard, targetEntity.coords, destList.add(targetEntity));
     }
   }
 
-  add(entity) {
+  create(entity) {
     invariant(!entity.isStatic, 'Tried to create a static entity!');
 
     const newEntity = this._getList(entity).add(entity);
@@ -325,7 +325,7 @@ export default class Board {
 
     invariant(!entity.isStatic, 'Tried to overwrite a static entity!');
 
-    this._getList(entity).destroy(entity);
+    this._getList(entity).remove(entity);
     setAt(this._get2dArray(entity), entity.coords, null);
   }
 

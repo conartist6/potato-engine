@@ -2,7 +2,7 @@
   "name": "kye-docs",
   "version": "0.0.1",
   "description": "The kye engine documentation.",
-  "main": "index.js",
+  "main": "build.mjs",
   "scripts": {
     "doc": "node build.js"
   },

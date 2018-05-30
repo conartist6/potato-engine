@@ -86,7 +86,6 @@ export default class Board {
         'create',
         'destroy',
         'at',
-        'setAt',
         'once',
         'spiralSearch',
         'players',
@@ -130,6 +129,9 @@ export default class Board {
     );
   }
 
+  /**
+   * Start ticking at regular intervals
+   **/
   start(event, listener) {
     this._paused = false;
     this.on('tick', () => {
@@ -140,6 +142,9 @@ export default class Board {
     this._emit('start');
   }
 
+  /**
+   * Set the game's play/pause state
+   **/
   setPaused(paused) {
     this._paused = paused;
     if (!this._paused) {
@@ -147,6 +152,9 @@ export default class Board {
     }
   }
 
+  /**
+   * Stop ticking. Permanently!
+   **/
   end() {
     this._clearTickTimeout();
     this._emit('end');
@@ -167,6 +175,9 @@ export default class Board {
     this._tickTimeout = null;
   }
 
+  /**
+   * Calling tick runs the main game loop once.
+   **/
   tick(playerDirection) {
     const scheduled = !playerDirection;
 
@@ -210,6 +221,9 @@ export default class Board {
     this._emit('tick');
   }
 
+  /**
+   * Get the entity at coords (with optional offset).
+   **/
   at(coords, direction = null, distance = 1) {
     return (
       at(this._board, coords, direction, distance) ||
@@ -218,6 +232,9 @@ export default class Board {
     );
   }
 
+  /**
+   * Set the entity at coords (with optional offset).
+   **/
   setAt(coords, newEntity, direction = null, distance = 1) {
     const currentEntity = this.at(coords);
     invariant(!(currentEntity && currentEntity.isStatic), 'Tried to overwrite a static entity!');
@@ -225,10 +242,16 @@ export default class Board {
     setAt(this._board, coords, newEntity);
   }
 
+  /**
+   * There can only one. TODO...
+   **/
   getPlayer() {
     return this._boardList.getPlayer(0);
   }
 
+  /**
+   * There's a reason we keep spares.
+   **/
   respawnPlayer() {
     const coords = this.spiralSearch(this._spawn, coords => this.at(coords) === null);
     const { Player } = entities;
@@ -236,11 +259,17 @@ export default class Board {
     this.setAt(coords, newPlayer);
   }
 
+  /**
+   * Going nowhere fast?
+   **/
   canMove(entity, direction) {
     const target = this.at(entity.coords, direction);
     return target == null || target instanceof entities.Field;
   }
 
+  /**
+   * Get goin'
+   **/
   move(entity, direction) {
     if (entity.state.stuck) {
       return false;
@@ -260,10 +289,16 @@ export default class Board {
     return canMove;
   }
 
+  /**
+   * Nom nom nom
+   **/
   eat(entity, targetEntity) {
     this.destroy(targetEntity);
   }
 
+  /**
+   * Politely ask whatever is in your way to scoot a bit thattaway.
+   **/
   shove(entity, direction) {
     let shoved = false;
     const pushee = this.at(entity.coords, direction);
@@ -287,6 +322,9 @@ export default class Board {
     return entity instanceof entities.Field ? this._fields : this._board;
   }
 
+  /**
+   * Replace an entity
+   **/
   replace(sourceEntity, replaceWith) {
     const destIsEntity = replaceWith instanceof Entity;
     const sourceList = this._getList(sourceEntity);
@@ -305,6 +343,9 @@ export default class Board {
     }
   }
 
+  /**
+   * Given an abstract entity, make it concrete and put it on the board.
+   **/
   create(entity) {
     invariant(!entity.isStatic, 'Tried to create a static entity!');
 
@@ -313,6 +354,9 @@ export default class Board {
     return newEntity;
   }
 
+  /**
+   * Remove a given entity from the board.
+   **/
   destroy(entity) {
     invariant(entity, 'Could not destroy entity. It did not exist!');
     invariant(!entity.isStatic, 'Tried to overwrite a static entity!');
@@ -476,6 +520,9 @@ export default class Board {
     this._alterMagnetTracking(magnet, -1);
   }
 
+  /**
+   * Search outwards from a given center, looking for an open square.
+   **/
   spiralSearch(coords, cb, maxRadius) {
     let radius = 0;
 

@@ -424,14 +424,14 @@ export default class Board {
       if (
         entity instanceof entities.Magnet &&
         aligned(entity.orientation, direction) &&
-        possibleTarget instanceof entities.Player &&
+        (possibleTarget && possibleTarget.electroMagnet) &&
         this.at(entity.coords, direction) === null
       ) {
         this._move(entity, direction);
       } else if (
         possibleTarget instanceof entities.Magnet &&
         aligned(possibleTarget.orientation, direction) &&
-        !(possibleTarget instanceof entities.Player) &&
+        !entity.electroMagnet &&
         !possibleTarget.nonFerrous &&
         this.at(entity.coords, direction) === null
       ) {

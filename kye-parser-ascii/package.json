@@ -5,7 +5,7 @@
   "dependencies": {
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
-    "iter-tools": "github:conartist6/iter-tools",
+    "iter-tools": "^4.0.2",
     "prando": "^3.0.3"
   },
   "peerDependencies": {

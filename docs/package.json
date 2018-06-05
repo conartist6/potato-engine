@@ -4,7 +4,7 @@
   "description": "The kye engine documentation.",
   "main": "index.js",
   "scripts": {
-    "doc": "esdoc -c kye-engine.esdoc.json"
+    "doc": "node build.js"
   },
   "repository": {
     "type": "git",

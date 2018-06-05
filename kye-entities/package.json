@@ -7,7 +7,7 @@
   ],
   "dependencies": {
     "immutable": "^3.8.2",
-    "iter-tools": "github:conartist6/iter-tools"
+    "iter-tools": "^4.0.2"
   },
   "peerDependencies": {
     "kye-engine": "3.1.0-alpha.4"

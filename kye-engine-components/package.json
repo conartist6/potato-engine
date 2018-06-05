@@ -27,13 +27,16 @@
     "babel-plugin-transform-react-jsx": "^6.4.0",
     "broccoli": "^1.1.4",
     "broccoli-babel-transpiler": "^6.1.4",
+    "broccoli-cli": "^1.0.0",
     "broccoli-funnel": "^2.0.1",
     "broccoli-merge-trees": "^3.0.0",
-    "broccoli-timepiece": "^0.3.0",
     "broccoli-sass-modular": "^1.0.0",
+    "broccoli-timepiece": "^0.3.0",
     "rimraf": "^2.6.2"
   },
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "broccoli build lib",
     "clean": "rimraf lib",

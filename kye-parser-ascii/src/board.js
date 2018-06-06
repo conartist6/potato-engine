@@ -22,8 +22,16 @@ export function serialize(board) {
     .map(line =>
       line
         .map(inst => {
-          const symbol = inst ? inst.symbol : ' ';
-          invariant(symbol, 'Unable to serialize level. Most likely a timer has too low a count.');
+          let symbol = ' ';
+          if (inst) {
+            symbol = inst.symbol;
+            invariant(
+              symbol,
+              'Unable to serialize level. Tried to serialize %s with attribute %s, which is not serializable.',
+              inst.constructor.__name,
+              inst.attribute,
+            );
+          }
           return symbol;
         })
         .join(''),

@@ -5,6 +5,9 @@ export default class Player extends BasePlayer {
   get electroMagnet() {
     return true;
   }
+  get idx() {
+    return this.state && this.state.id;
+  }
 }
 Player.attributesBySymbol = Map({ K: null });
 Player.__name = 'Player'; // uglify killin' me

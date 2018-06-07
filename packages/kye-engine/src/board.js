@@ -122,7 +122,7 @@ export default class Board {
     this._emit = this.emit;
     this.emit = undefined;
 
-    this._spawn = [...this.getPlayer().coords];
+    this._spawns = Array.from(map(player => [...player.coords], this._boardList.players()));
 
     this._iteratorObjects = Array.from(
       map(i => this._initializeIteratorObject({}), range(dimensions.width * dimensions.height)),
@@ -178,13 +178,12 @@ export default class Board {
   /**
    * Calling tick runs the main game loop once.
    **/
-  tick(playerDirection) {
+  tick([playerDirection, playerIdx] = []) {
     const scheduled = !playerDirection;
-
     for (const entity of this._boardList) {
       if (entity instanceof entities.Player) {
-        if (playerDirection) {
-          this.move(this.getPlayer(), playerDirection);
+        if (playerDirection && playerIdx === entity.idx) {
+          this.move(this.getPlayer(playerIdx), playerDirection);
         }
       }
       let sleeping =
@@ -243,19 +242,19 @@ export default class Board {
   }
 
   /**
-   * There can only one. TODO...
+   * Who is it?
    **/
-  getPlayer() {
-    return this._boardList.getPlayer(0);
+  getPlayer(idx = 0) {
+    return this._boardList.getPlayer(idx);
   }
 
   /**
    * There's a reason we keep spares.
    **/
-  respawnPlayer() {
-    const coords = this.spiralSearch(this._spawn, coords => this.at(coords) === null);
+  respawnPlayer(idx) {
+    const coords = this.spiralSearch(this._spawns[idx], coords => this.at(coords) === null);
     const { Player } = entities;
-    const newPlayer = this._boardList.set(0, new Player(coords));
+    const newPlayer = this._boardList.set(idx, new Player(coords));
     this.setAt(coords, newPlayer);
   }
 
@@ -363,7 +362,7 @@ export default class Board {
 
     if (entity instanceof entities.Player) {
       this.once('tick', () => {
-        this._emit('death');
+        this._emit('death', entity);
       });
     }
 

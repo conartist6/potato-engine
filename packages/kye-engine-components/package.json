@@ -21,7 +21,9 @@
     "broccoli-sass-modular": "^1.0.0",
     "rimraf": "^2.6.2"
   },
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "watch": "broccoli-timepiece lib",
     "build": "broccoli build lib",

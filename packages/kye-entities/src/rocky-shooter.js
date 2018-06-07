@@ -10,5 +10,5 @@ export default class RockyShooter extends Shooter {
     return this.entities.Rocky;
   }
 }
-RockyShooter.attributesBySymbol = Map({ F: null });
+RockyShooter.attributesBySymbol = Map({ F: 'UP' });
 RockyShooter.__name = 'RockyShooter'; // uglify killin' me

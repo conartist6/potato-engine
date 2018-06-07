@@ -3,14 +3,14 @@ import makeEmitter from 'event-emitter';
 import allOff from 'event-emitter/all-off';
 
 const keysToDirections = {
-  [c.KEY_UP]: 'UP',
-  [c.KEY_W]: 'UP',
-  [c.KEY_DOWN]: 'DOWN',
-  [c.KEY_S]: 'DOWN',
-  [c.KEY_LEFT]: 'LEFT',
-  [c.KEY_A]: 'LEFT',
-  [c.KEY_RIGHT]: 'RIGHT',
-  [c.KEY_D]: 'RIGHT',
+  [c.KEY_UP]: ['UP', 0],
+  [c.KEY_W]: ['UP', 1],
+  [c.KEY_DOWN]: ['DOWN', 0],
+  [c.KEY_S]: ['DOWN', 1],
+  [c.KEY_LEFT]: ['LEFT', 0],
+  [c.KEY_A]: ['LEFT', 1],
+  [c.KEY_RIGHT]: ['RIGHT', 0],
+  [c.KEY_D]: ['RIGHT', 1],
 };
 
 export default class Input {

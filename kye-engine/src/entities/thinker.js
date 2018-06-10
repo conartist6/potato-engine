@@ -14,7 +14,7 @@ export default class Thinker extends Interactor {
   /**
    * Thinkers get to call their think method every `frequency` game ticks.
    * Thinkers get to think in the right to left, top to bottom order that they
-   * were added to the game board.
+   * were added to the game {@param board}.
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
    **/
   think(board) {}

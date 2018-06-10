@@ -2,7 +2,7 @@
   "name": "kye-docs",
   "version": "0.0.1",
   "description": "The kye engine documentation.",
-  "main": "build.mjs",
+  "main": "build.js",
   "scripts": {
     "doc": "node build.js"
   },
@@ -22,5 +22,6 @@
     "esdoc-external-nodejs-plugin": "^1.0.0",
     "esdoc-importpath-plugin": "^1.0.2",
     "esdoc-standard-plugin": "^1.0.0"
-  }
+  },
+  "dependencies": {}
 }

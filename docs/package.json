@@ -4,7 +4,7 @@
   "description": "The kye engine documentation.",
   "main": "build.js",
   "scripts": {
-    "doc": "node build.js"
+    "doc": "node --preserve-symlinks --preserve-symlinks-main build.js"
   },
   "repository": {
     "type": "git",
@@ -17,11 +17,8 @@
   "license": "MIT",
   "homepage": "https://github.com/conartist6/kye#readme",
   "devDependencies": {
-    "esdoc": "^1.1.0",
-    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
-    "esdoc-external-nodejs-plugin": "^1.0.0",
-    "esdoc-importpath-plugin": "^1.0.2",
-    "esdoc-standard-plugin": "^1.0.0"
+    "esdoc2": "^2.2.0",
+    "esdoc2-react-standard-plugin": "^1.0.0"
   },
   "dependencies": {}
 }

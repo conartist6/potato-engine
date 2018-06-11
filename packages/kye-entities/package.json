@@ -8,7 +8,7 @@
     "iter-tools": "^4.0.2"
   },
   "peerDependencies": {
-    "kye-engine": "3.1.0-alpha.4"
+    "potato-engine": "3.1.0-alpha.4"
   },
   "scripts": {
     "watch": "broccoli-timepiece lib",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/conartist6/kye/tree/master/kye-entities"
+    "url": "https://github.com/conartist6/potato-engine/tree/master/package/kye-entities"
   },
   "main": "lib/index",
   "module": "lib/index",

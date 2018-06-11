@@ -16,7 +16,7 @@ import Turner from './turner';
 import Wall from './wall';
 import WhiteHole from './white-hole';
 
-import { entityTypeRegistry } from 'kye-engine';
+import { entityTypeRegistry } from 'potato-engine';
 
 [
   BlackHole,

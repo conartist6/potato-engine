@@ -1,4 +1,4 @@
-import { entities } from 'kye-engine';
+import { entities } from 'potato-engine';
 import invariant from 'invariant';
 
 export function parse(lines) {

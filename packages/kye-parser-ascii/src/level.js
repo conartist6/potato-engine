@@ -1,5 +1,5 @@
 import { parse as parseBoard, serialize as serializeBoard } from './board';
-import { Level } from 'kye-engine';
+import { Level } from 'potato-engine';
 import invariant from 'invariant';
 
 export const LEVEL_HEADER_LINES = 3;

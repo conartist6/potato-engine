@@ -1,7 +1,7 @@
-import Thinker from 'kye-engine/lib/entities/thinker';
+import Thinker from 'potato-engine/lib/entities/thinker';
 import { Map } from 'immutable';
 
-import { rightOf, getCoordsInDirection } from 'kye-engine/lib/directions';
+import { rightOf, getCoordsInDirection } from 'potato-engine/lib/directions';
 
 export default class Shooter extends Thinker {
   constructor(coords, attribute, ...args) {

@@ -1,6 +1,6 @@
-import Thinker from 'kye-engine/lib/entities/thinker';
+import Thinker from 'potato-engine/lib/entities/thinker';
 import { Map } from 'immutable';
-import directions, { flip } from 'kye-engine/lib/directions';
+import directions, { flip } from 'potato-engine/lib/directions';
 
 export default class Sentry extends Thinker {
   think(board) {

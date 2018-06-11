@@ -1,6 +1,6 @@
-import Interactor from 'kye-engine/lib/entities/interactor';
+import Interactor from 'potato-engine/lib/entities/interactor';
 import { Map } from 'immutable';
-import directions, { randomDirection, manhattan, towards } from 'kye-engine/lib/directions';
+import directions, { randomDirection, manhattan, towards } from 'potato-engine/lib/directions';
 
 export default class Monster extends Interactor {
   get frequency() {

@@ -1,4 +1,4 @@
-import Campaign from 'kye-engine/campaign';
+import Campaign from 'potato-engine/campaign';
 import { parse, serialize } from '../campaign';
 
 // From KIDS.KYE
@@ -52,6 +52,6 @@ Well done
 `;
 
 it('parses', () => {
-  const result = parse(TEST_CAMPAIGN);
-  expect(result).to.be.instanceof(Campaign);
+    const result = parse(TEST_CAMPAIGN);
+    expect(result).to.be.instanceof(Campaign);
 });

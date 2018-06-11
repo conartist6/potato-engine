@@ -22,7 +22,7 @@ export class EntityState {
 }
 
 /**
- * An entity represents a game playing piece in the kye engine. All pieces which wish to participate in the game
+ * An entity represents a game playing piece in the potato engine. All pieces which wish to participate in the game
  * must derive from this class. Each entity subclass is likely to have particular behaviors which define it,
  * as well as a particular visual presentation so that players know what they should expect it to do.
  *

@@ -1,5 +1,5 @@
 {
-  "name": "kye-engine",
+  "name": "potato-engine",
   "version": "3.1.0-alpha.4",
   "license": "MIT",
   "dependencies": {
@@ -19,7 +19,7 @@
   "module": "lib/index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/conartist6/kye/tree/master/kye-engine"
+    "url": "https://github.com/conartist6/potato-engine/tree/master/packages/potato-engine"
   },
   "author": {
     "name": "Conrad Buck",

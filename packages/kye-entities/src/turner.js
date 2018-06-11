@@ -1,6 +1,6 @@
-import Interactor from 'kye-engine/lib/entities/interactor';
+import Interactor from 'potato-engine/lib/entities/interactor';
 import { Map } from 'immutable';
-import { rightOf, leftOf } from 'kye-engine/lib/directions';
+import { rightOf, leftOf } from 'potato-engine/lib/directions';
 
 export default class Turner extends Interactor {
   react(board, targetEntity, direction) {

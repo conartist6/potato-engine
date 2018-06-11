@@ -1,4 +1,4 @@
-import Entity from 'kye-engine/lib/entity';
+import Entity from 'potato-engine/lib/entity';
 import { Seq } from 'immutable';
 import { range } from 'iter-tools';
 

@@ -441,21 +441,6 @@ export default class Board {
 
   // On a Ferris wheel, looking out on Coney Island...
   _theMagneticFields(entity) {
-    // NOTES:
-    // Magnets are polar, i.e. two horizontal magnets (S S) will not snap together.
-    // Pulling is passive, being pulled happens on your turn. This is why blocks were thinkers.
-    // For this to work right, objects must be attracted (move in response to detecting a magnet)
-    // This does not guarantee that all magnets are finished pulling.
-    // Indeed in kye2.0 and Python kye, the following happens:
-    // 55555      55555
-    // 5s S5      5 s 5 <- The top vertical magnet could still be pulled down
-    // 5   5  =>  5  S5    to the bottom vertical magnet but stays indefinitely.
-    // 5S s5      5Ss 5
-    // 55555      55555
-    // Magnetized bouncing also occurs in Python kye and kye2.0: (works w/ B too)
-    // Ss S   =>  S sS   =>  Ss S   =>  ... ad infintem
-    // This suggests that being attracted has priority over being stuck
-
     const magnetismOnEntity = at(this._magnetization, entity.coords);
 
     if (magnetismOnEntity === 0) {

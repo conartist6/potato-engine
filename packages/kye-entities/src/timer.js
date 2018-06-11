@@ -1,4 +1,4 @@
-import Thinker from 'kye-engine/lib/entities/thinker';
+import Thinker from 'potato-engine/lib/entities/thinker';
 import { Map } from 'immutable';
 
 export default class Timer extends Thinker {

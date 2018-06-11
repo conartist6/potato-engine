@@ -2,8 +2,7 @@ import EntityList from './entity-list';
 import entities from './entities';
 
 /**
- * In Kye, thinking entities have the opportunity to take action in the order (RTL reading order)
- * that they originally appeared in the level. This structure is needed to keep track of that order.
+ * Keeping a list of entities makes it easy to iterate through them in a stable order.
  */
 export default class BoardList {
   constructor(entities, initialState = {}) {

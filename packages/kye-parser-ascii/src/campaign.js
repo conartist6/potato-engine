@@ -2,7 +2,7 @@ import { Map } from 'immutable';
 import { parse as parseLevel, serialize as serializeLevel, LEVEL_HEADER_LINES } from './level';
 import invariant from 'invariant';
 import Prando from 'prando';
-import { Campaign } from 'kye-engine';
+import { Campaign } from 'potato-engine';
 
 export function serialize(campaign) {
   return ['' + campaign.levels.length, ...campaign.levels.map(serializeLevel)].join('\n');

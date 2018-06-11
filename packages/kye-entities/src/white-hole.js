@@ -1,4 +1,4 @@
-import Thinker from 'kye-engine/lib/entities/thinker';
+import Thinker from 'potato-engine/lib/entities/thinker';
 
 /**
  * A white hole is not a new entity type, it is merely a black hole which is digesting.

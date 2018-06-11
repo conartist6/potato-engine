@@ -1,5 +1,5 @@
 {
-  "name": "kye-engine-components",
+  "name": "potato-engine-components",
   "version": "3.1.0-alpha.4",
   "license": "MIT",
   "dependencies": {
@@ -13,7 +13,7 @@
   },
   "peerDependencies": {
     "react": "^16.3.2",
-    "kye-engine": "3.1.0-alpha.4"
+    "potato-engine": "3.1.0-alpha.4"
   },
   "devDependencies": {
     "babel-plugin-transform-react-display-name": "^6.4.0",
@@ -32,7 +32,8 @@
   "module": "lib/index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/conartist6/kye/tree/master/kye-engine-components"
+    "url":
+      "https://github.com/conartist6/potato-engine/tree/master/packages/potato-engine-components"
   },
   "author": {
     "name": "Conrad Buck",

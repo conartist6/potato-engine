@@ -2,7 +2,7 @@
 
 ![Game screenshot](https://raw.githubusercontent.com/conartist6/potato-engine/master/default-kye.png)
 
-This is a monorepo of npm packages. For further information on the purpose of this repository, see [packages/potato-engine/README.md](https://github.com/conartist6/potato-engine/blob/master/pacakges/potato-engine/README.md)
+This is a monorepo of npm packages. For further information on the purpose of this repository, see [packages/potato-engine](https://github.com/conartist6/potato-engine/blob/master/packages/potato-engine/)
 
 This project is in alpha.
 

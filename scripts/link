@@ -1,0 +1,12 @@
+#!/bin/bash
+pushd packages/kye-engine
+npm link
+popd
+npm link kye-engine
+cd packages/kye-engine-components;
+npm link
+cd ../kye-parser-ascii
+npm link
+cd ../kye-entities
+npm link
+

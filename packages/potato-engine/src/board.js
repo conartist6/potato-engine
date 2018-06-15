@@ -330,17 +330,17 @@ export default class Board {
     const sourceList = this._getList(sourceEntity);
     const destList = destIsEntity ? this._getList(replaceWith) : null;
 
+    let targetEntity;
     if (!destIsEntity || sourceList === destList) {
-      return sourceList.replace(sourceEntity, replaceWith);
+      targetEntity = sourceList.replace(sourceEntity, replaceWith);
     } else {
-      const targetEntity = replaceWith;
-      const sourceBoard = this._get2dArray(sourceEntity);
-      const destBoard = this._get2dArray(targetEntity);
-
       sourceList.remove(sourceEntity);
-      setAt(sourceBoard, sourceEntity.coords, null);
-      return setAt(destBoard, targetEntity.coords, destList.add(targetEntity));
+      targetEntity = destList.add(replaceWith);
     }
+    const sourceBoard = this._get2dArray(sourceEntity);
+    const destBoard = this._get2dArray(targetEntity);
+    setAt(sourceBoard, sourceEntity.coords, null);
+    return setAt(destBoard, targetEntity.coords, targetEntity);
   }
 
   /**

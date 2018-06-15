@@ -12,7 +12,7 @@
   },
   "scripts": {
     "watch": "broccoli-timepiece lib",
-    "build": "broccoli build lib",
+    "build": "broccoli build --overwrite lib",
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build"
   },

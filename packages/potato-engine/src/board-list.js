@@ -1,18 +1,22 @@
 import EntityList from './entity-list';
 import entities from './entities';
 
+let _id = 0;
+
+class BoardEntityList extends EntityList {
+  __nextId() {
+    return _id++;
+  }
+}
+
 /**
  * Keeping a list of entities makes it easy to iterate through them in a stable order.
  */
 export default class BoardList {
   constructor(entities, initialState = {}) {
-    this._initialState = { list: this, ...initialState };
-    this._playerList = new EntityList([], {
-      ...this._initialState,
-    });
-    this._entityList = new EntityList([], {
-      ...this._initialState,
-    });
+    this._initialState = { ...initialState };
+    this._playerList = new BoardEntityList([], this._initialState);
+    this._entityList = new BoardEntityList([], this._initialState);
 
     for (const entity of entities) {
       this.add(entity);

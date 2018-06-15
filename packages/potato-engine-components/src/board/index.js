@@ -47,8 +47,7 @@ export default class Board extends PureComponent {
     for (const entity of iterator) {
       const { state, attribute, coords } = entity;
       const [x, y] = coords;
-      const prefix = entity instanceof entities.Player ? 'p' : '';
-      const key = state ? `${prefix}${state.id}` : `${x}-${y}`;
+      const key = state ? state.id : `${x}-${y}`;
 
       let element = entity && (
         <Entity entity={entity} x={x} y={y} attribute={attribute} key={key} />

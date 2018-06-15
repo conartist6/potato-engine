@@ -6,6 +6,9 @@ import Entity, { EntityState } from './entity';
  **/
 export class ListEntityState extends EntityState {
   get id() {
+    return this._id;
+  }
+  get idx() {
     return this._idx;
   }
 }
@@ -21,9 +24,14 @@ export default class EntityList {
   constructor(entities, initialState) {
     this._list = [];
     this._initialState = initialState;
+    this._id = 0;
     for (const entity of entities) {
       this.add(entity);
     }
+  }
+
+  __nextId() {
+    return this._id++;
   }
 
   add(entity) {
@@ -35,9 +43,12 @@ export default class EntityList {
   _cloneEntity(entity, idx) {
     const newState = new ListEntityState(entity.state);
 
+    let id = this.__nextId();
+
     newState.list = this;
     Object.assign(newState, this._initialState);
     newState._idx = idx;
+    newState._id = id;
 
     return entity.cloneWithState(newState);
   }

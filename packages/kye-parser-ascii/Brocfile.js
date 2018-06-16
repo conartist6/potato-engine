@@ -6,7 +6,11 @@ const path = require('path');
 let mjs = 'src';
 mjs = esTranspiler(mjs, {
   filterExtensions: ['js'],
-  plugins: ['check-es2015-constants', 'transform-object-rest-spread', 'transform-class-properties'],
+  plugins: [
+    'check-es2015-constants',
+    ['transform-object-rest-spread', { useBuiltIns: true }],
+    'transform-class-properties',
+  ],
 });
 mjs = new Funnel(mjs, {
   destDir: '',
@@ -25,7 +29,7 @@ es = esTranspiler(es, {
   filterExtensions: ['js'],
   plugins: [
     'check-es2015-constants',
-    'transform-object-rest-spread',
+    ['transform-object-rest-spread', { useBuiltIns: true }],
     'transform-class-properties',
     ['transform-es2015-modules-commonjs', { loose: true }],
   ],

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import Entity from '../entity';
-import entities from 'potato-engine/lib/entities';
+import { entities } from 'potato-engine';
 
 import './board.css';
 

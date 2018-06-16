@@ -11,7 +11,7 @@ mjs = esTranspiler(mjs, {
   plugins: [
     'syntax-jsx',
     'check-es2015-constants',
-    'transform-object-rest-spread',
+    ['transform-object-rest-spread', { useBuiltIns: true }],
     'transform-class-properties',
     'transform-react-display-name',
     'transform-react-jsx',
@@ -35,7 +35,7 @@ es = esTranspiler(es, {
   plugins: [
     'syntax-jsx',
     'check-es2015-constants',
-    'transform-object-rest-spread',
+    ['transform-object-rest-spread', { useBuiltIns: true }],
     'transform-class-properties',
     ['transform-es2015-modules-commonjs', { loose: true }],
     'transform-react-display-name',

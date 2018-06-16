@@ -1,27 +1,6 @@
-$border-radius: 7px;
-
 .board {
   border-collapse: collapse;
   position: relative;
-
-  // tr {
-  //   &:first-child > td {
-  //     &:first-child .wall {
-  //       border-top-left-radius: $border-radius;
-  //     }
-  //     &:last-child .wall {
-  //       border-top-right-radius: $border-radius;
-  //     }
-  //   }
-  //   &:last-child > td {
-  //     &:first-child .wall {
-  //       border-bottom-left-radius: $border-radius;
-  //     }
-  //     &:last-child .wall {
-  //       border-bottom-right-radius: $border-radius;
-  //     }
-  //   }
-  // }
 
   .layer {
     width: 100%;

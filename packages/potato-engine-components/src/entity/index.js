@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import cx from 'classnames'; // :'
 import dasherize from 'dasherize';
 import { Set } from 'immutable';
-import e from 'potato-engine/lib/entities';
-
-import './entity.css';
+import { entities as e } from 'potato-engine';
 
 export default class Entity extends Component {
   constructor() {

@@ -96,7 +96,9 @@ export default class Board {
     this._emit = this.emit;
     this.emit = undefined;
 
-    this._spawn = [...this.getPlayer().coords];
+    if (!options.displayOnly) {
+      this._spawn = [...this.getPlayer().coords];
+    }
 
     this._iteratorObjects = Array.from(
       map(i => this._initializeIteratorObject({}), range(dimensions.width * dimensions.height)),

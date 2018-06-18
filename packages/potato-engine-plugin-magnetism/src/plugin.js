@@ -1,11 +1,12 @@
-import { entities, Board } from 'potato-engine';
+import { entities, directions as _directions, Board, BoardPlugin } from 'potato-engine';
 
-class MagnetismPlugin {
+const { at, setAt, array2d, aligned, directions, directionsByOrientation } = _directions;
+
+export default class MagnetismPlugin extends BoardPlugin {
   constructor(board, findEntities) {
     super(board, findEntities);
-    const { array2d } = Board;
 
-    this._magnetization = array2d(dimensions, 0);
+    this._magnetization = array2d(board.dimensions, 0);
     for (const magnet of findEntities(s => s instanceof entities.Magnet)) {
       this._trackMagnet(magnet);
     }

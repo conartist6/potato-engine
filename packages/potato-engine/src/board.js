@@ -12,6 +12,8 @@ import {
   aligned,
   at,
   setAt,
+  array2d,
+  iterateArray2d,
   inArray2d,
   copyCoords,
   directions,
@@ -40,7 +42,6 @@ const recordingDirectionSymbols = {
 export default class Board {
   constructor(level, dimensions, options) {
     const { Field } = entities;
-    const { array2d, iterateArray2d } = Board;
 
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
@@ -102,7 +103,7 @@ export default class Board {
     );
 
     const { plugins } = options;
-    this._pluginInsts = plugins.map(plugin => new Plugin(this, findEntities));
+    this._pluginInsts = plugins.map(Plugin => new Plugin(this, findEntities));
   }
 
   /**
@@ -525,30 +526,6 @@ export default class Board {
         obj.static = this._statics[row][col];
 
         yield obj;
-      }
-    }
-  }
-
-  static array2d(dimensions, initialValue, entityList = []) {
-    const { height, width } = dimensions;
-    const arr = new Array(height);
-    for (let i = 0; i < height; i++) {
-      arr[i] = new Array(width);
-      for (let j = 0; j < width; j++) {
-        arr[i][j] = initialValue;
-      }
-    }
-    for (const entity of entityList) {
-      const [x, y] = entity.coords;
-      arr[y][x] = entity;
-    }
-    return arr;
-  }
-
-  static *iterateArray2d(array2d) {
-    for (const row of array2d) {
-      for (const cell of row) {
-        yield cell;
       }
     }
   }

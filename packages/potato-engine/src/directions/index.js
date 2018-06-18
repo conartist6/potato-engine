@@ -149,6 +149,30 @@ export function setAt(array2d, coords, newValue, direction = null, distance = 1)
   return newValue;
 }
 
+export function array2d(dimensions, initialValue, entityList = []) {
+  const { height, width } = dimensions;
+  const arr = new Array(height);
+  for (let i = 0; i < height; i++) {
+    arr[i] = new Array(width);
+    for (let j = 0; j < width; j++) {
+      arr[i][j] = initialValue;
+    }
+  }
+  for (const entity of entityList) {
+    const [x, y] = entity.coords;
+    arr[y][x] = entity;
+  }
+  return arr;
+}
+
+export function* iterateArray2d(array2d) {
+  for (const row of array2d) {
+    for (const cell of row) {
+      yield cell;
+    }
+  }
+}
+
 /**
  * Determine whether particular coords (optionally displaced) are out of the bounds of a 2d array
  * @param {mixed[][]} array2d The 2D array to access

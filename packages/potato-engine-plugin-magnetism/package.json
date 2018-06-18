@@ -1,0 +1,21 @@
+{
+  "name": "potato-engine-plugin-magnetism",
+  "version": "0.1.0",
+  "license": "MIT",
+  "peerDependencies": {
+    "potato-engine": "0.1.0"
+  },
+  "scripts": {
+    "watch": "broccoli-timepiece lib",
+    "build": "broccoli build --overwrite lib",
+    "clean": "rimraf lib",
+    "prepare": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url":
+      "https://github.com/conartist6/potato-engine/tree/master/packages/potato-engine-plugin-magnetism"
+  },
+  "main": "lib/plugin",
+  "module": "lib/plugin"
+}

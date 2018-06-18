@@ -27,30 +27,6 @@ import {
 
 import entities from './entities';
 
-function array2d(dimensions, initialValue, entityList = []) {
-  const { height, width } = dimensions;
-  const arr = new Array(height);
-  for (let i = 0; i < height; i++) {
-    arr[i] = new Array(width);
-    for (let j = 0; j < width; j++) {
-      arr[i][j] = initialValue;
-    }
-  }
-  for (const entity of entityList) {
-    const [x, y] = entity.coords;
-    arr[y][x] = entity;
-  }
-  return arr;
-}
-
-function* iterateArray2d(array2d) {
-  for (const row of array2d) {
-    for (const cell of row) {
-      yield cell;
-    }
-  }
-}
-
 const recordingDirectionSymbols = {
   LEFT: 'l',
   UP: 'u',
@@ -63,7 +39,8 @@ const recordingDirectionSymbols = {
  **/
 export default class Board {
   constructor(level, dimensions, options) {
-    const { Field, Magnet } = entities;
+    const { Field } = entities;
+    const { array2d, iterateArray2d } = Board;
 
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
@@ -110,10 +87,6 @@ export default class Board {
     this._statics = array2d(dimensions, null, this._staticsList);
     this._board = array2d(dimensions, null, this._boardList);
     this._fields = array2d(dimensions, null, this._fieldsList);
-    this._magnetization = array2d(dimensions, 0);
-    for (const magnet of findEntities(s => s instanceof Magnet)) {
-      this._trackMagnet(magnet);
-    }
 
     this._tickCounter = 0;
     this._isInitial = true;
@@ -127,6 +100,9 @@ export default class Board {
     this._iteratorObjects = Array.from(
       map(i => this._initializeIteratorObject({}), range(dimensions.width * dimensions.height)),
     );
+
+    const { plugins } = options;
+    this._pluginInsts = plugins.map(plugin => new Plugin(this, findEntities));
   }
 
   /**
@@ -191,9 +167,8 @@ export default class Board {
         this._isInitial || // entities start asleep
         !(this._tickCounter % entity.frequency === 0 || (!scheduled && entity.opportunistic)); // not every entity thinks every tick
       if (!sleeping) {
-        const stuck = this._theMagneticFields(entity);
-        if (!(entity instanceof entities.Player)) {
-          entity.state.stuck = stuck;
+        for (const plugin of this._pluginInsts) {
+          plugin.onEntityTick && plugin.onEntityTick(entity);
         }
       }
       if (entity.think && !sleeping) {
@@ -330,6 +305,10 @@ export default class Board {
     const sourceList = this._getList(sourceEntity);
     const destList = destIsEntity ? this._getList(replaceWith) : null;
 
+    for (const plugin of this._pluginInsts) {
+      plugin.untrack && plugin.untrack(sourceEntity, 'replace');
+    }
+
     let targetEntity;
     if (!destIsEntity || sourceList === destList) {
       targetEntity = sourceList.replace(sourceEntity, replaceWith);
@@ -337,6 +316,11 @@ export default class Board {
       sourceList.remove(sourceEntity);
       targetEntity = destList.add(replaceWith);
     }
+
+    for (const plugin of this._pluginInsts) {
+      plugin.track && plugin.track(targetEntity, 'replace');
+    }
+
     const sourceBoard = this._get2dArray(sourceEntity);
     const destBoard = this._get2dArray(targetEntity);
     setAt(sourceBoard, sourceEntity.coords, null);
@@ -351,6 +335,11 @@ export default class Board {
 
     const newEntity = this._getList(entity).add(entity);
     setAt(this._get2dArray(entity), entity.coords, newEntity);
+
+    for (const plugin of this._pluginInsts) {
+      plugin.track && plugin.track(newEntity, 'create');
+    }
+
     return newEntity;
   }
 
@@ -365,6 +354,10 @@ export default class Board {
       this.once('tick', () => {
         this._emit('death');
       });
+    }
+
+    for (const plugin of this._pluginInsts) {
+      plugin.untrack && plugin.untrack(entity, 'destroy');
     }
 
     this._getList(entity).remove(entity);
@@ -439,72 +432,6 @@ export default class Board {
     return direction;
   }
 
-  // On a Ferris wheel, looking out on Coney Island...
-  _theMagneticFields(entity) {
-    const magnetismOnEntity = at(this._magnetization, entity.coords);
-
-    if (magnetismOnEntity === 0) {
-      return false;
-    }
-
-    directions.forEach((direction, i) => {
-      const possibleTarget = at(this._board, entity.coords, direction, 2);
-
-      if (
-        entity instanceof entities.Magnet &&
-        aligned(entity.orientation, direction) &&
-        (possibleTarget && possibleTarget.electroMagnet) &&
-        this.at(entity.coords, direction) === null
-      ) {
-        this._move(entity, direction);
-      } else if (
-        possibleTarget instanceof entities.Magnet &&
-        aligned(possibleTarget.orientation, direction) &&
-        !entity.electroMagnet &&
-        !possibleTarget.nonFerrous &&
-        this.at(entity.coords, direction) === null
-      ) {
-        const entityIsMagnet = entity instanceof entities.Magnet;
-        if (
-          !entityIsMagnet ||
-          (entityIsMagnet && entity.orientation !== possibleTarget.orientation)
-        ) {
-          this._move(entity, direction);
-        }
-      }
-    });
-    return at(this._magnetization, entity.coords) >= 32;
-  }
-
-  _alterMagnetTracking(magnet, plusMinus) {
-    const { coords } = magnet;
-    setAt(this._magnetization, coords, at(this._magnetization, coords) + 1 * plusMinus);
-    directionsByOrientation[magnet.orientation].forEach(direction => {
-      setAt(
-        this._magnetization,
-        coords,
-        at(this._magnetization, coords, direction, 1) + 32 * plusMinus,
-        direction,
-        1,
-      );
-      setAt(
-        this._magnetization,
-        coords,
-        at(this._magnetization, coords, direction, 2) + 1 * plusMinus,
-        direction,
-        2,
-      );
-    });
-  }
-
-  _trackMagnet(magnet) {
-    this._alterMagnetTracking(magnet, 1);
-  }
-
-  _untrackMagnet(magnet) {
-    this._alterMagnetTracking(magnet, -1);
-  }
-
   /**
    * Search outwards from a given center, looking for an open square.
    **/
@@ -536,15 +463,16 @@ export default class Board {
   }
 
   _move(entity, direction) {
-    const isMagnet = entity instanceof entities.Magnet;
-    if (isMagnet) {
-      this._untrackMagnet(entity);
+    for (const plugin of this._pluginInsts) {
+      plugin.untrack && plugin.untrack(entity, 'move');
     }
+
     this.setAt(entity.coords, null);
     moveCoordsInDirection(entity.coords, direction);
     this.setAt(entity.coords, entity);
-    if (isMagnet) {
-      this._trackMagnet(entity);
+
+    for (const plugin of this._pluginInsts) {
+      plugin.track && plugin.track(entity, 'move');
     }
   }
 
@@ -597,6 +525,30 @@ export default class Board {
         obj.static = this._statics[row][col];
 
         yield obj;
+      }
+    }
+  }
+
+  static array2d(dimensions, initialValue, entityList = []) {
+    const { height, width } = dimensions;
+    const arr = new Array(height);
+    for (let i = 0; i < height; i++) {
+      arr[i] = new Array(width);
+      for (let j = 0; j < width; j++) {
+        arr[i][j] = initialValue;
+      }
+    }
+    for (const entity of entityList) {
+      const [x, y] = entity.coords;
+      arr[y][x] = entity;
+    }
+    return arr;
+  }
+
+  static *iterateArray2d(array2d) {
+    for (const row of array2d) {
+      for (const cell of row) {
+        yield cell;
       }
     }
   }

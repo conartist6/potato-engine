@@ -3,13 +3,14 @@ import { parse as parseLevel, serialize as serializeLevel, LEVEL_HEADER_LINES } 
 import invariant from 'invariant';
 import Prando from 'prando';
 import { Campaign } from 'potato-engine';
+import stripBom from 'strip-bom';
 
 export function serialize(campaign) {
   return ['' + campaign.levels.length, ...campaign.levels.map(serializeLevel)].join('\n');
 }
 
 export function parse(text, seed) {
-  const lines = text.split(/\r?\n/);
+  const lines = stripBom(text).split(/\r?\n/);
   const nLevels = Number(lines[0]);
   invariant(!isNaN(nLevels), "A Kye Campaign's first line must be the number of levels in it.");
   let levelFirstLine = 1;

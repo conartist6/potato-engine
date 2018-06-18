@@ -1,6 +1,6 @@
 {
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": ["packages/*", "games/*"],
   "devDependencies": {
     "lerna": "^2.11.0"
   },

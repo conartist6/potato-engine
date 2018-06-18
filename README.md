@@ -6,6 +6,10 @@ This is a monorepo of npm packages. For further information on the purpose of th
 
 This project is in alpha.
 
+## Developing with the kye engine
+
+When are you are trying to work on the engine as it is used in your game, you can check out your game's repo (with a package.json) into the games folder, which is gitignored. Running `yarn install` in the root of this repository will link the game engine packages for you.
+
 ## History
 
 Potato-engine was inspired in particular by Kye, and during initial development was called kye-engine. Kye is a 1992 game created by Colin Garbutt, who is not affiliated with this project. Kye is retained as the reference game implementation on the engine.

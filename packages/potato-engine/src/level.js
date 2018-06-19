@@ -4,12 +4,11 @@ import invariant from 'invariant';
  * Level: STUB
  **/
 export default class Level {
-  constructor(header, dimensions, board, index = null, seed = null) {
-    this.header = header;
-    this.dimensions = dimensions;
-    this.board = board;
-    this.index = index;
-    this.seed = seed;
+  constructor(props) {
+    //header, dimensions, board, index = null, seed = null) {
+    this.index = null;
+    this.seed = null;
+    Object.assign(this, props);
   }
 
   count(EntityClass) {

@@ -36,14 +36,14 @@ function _findDimensions(lines, firstLine) {
   return { width, height };
 }
 
-export function parse(text, firstLine = 0, campaign = null) {
+export function parse(text, firstLine = 0, index = null) {
   const lines = typeof text === 'string' ? text.split(/\r?\n/) : text;
   const header = _parseHeader(lines.slice(firstLine, LEVEL_HEADER_LINES + firstLine));
   const dimensions = _findDimensions(lines, firstLine + LEVEL_HEADER_LINES);
   const board = parseBoard(
     lines.slice(firstLine + LEVEL_HEADER_LINES, firstLine + LEVEL_HEADER_LINES + dimensions.height),
   );
-  return new Level(header, dimensions, board, campaign);
+  return new Level({ header, dimensions, board, index });
 }
 
 export function serialize(level) {

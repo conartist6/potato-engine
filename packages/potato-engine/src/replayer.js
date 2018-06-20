@@ -7,16 +7,45 @@ const replaySymbolsToDirections = {
   d: 'DOWN',
 };
 
-class ReplayIterator extends BoardDecorator {
-  constructor(board, replay) {
-    super(board);
+export default class Replayer extends BoardDecorator {
+  constructor(level, replay, shouldLoop) {
+    super(new Board(level));
 
+    this._level = level;
     this._replay = replay;
+    this._shouldLoop = shouldLoop;
+
+    this._reset();
+  }
+
+  __reemitEvents() {
+    this.__board.onAny((name, ...args) => {
+      if (!this._shouldLoop || name !== 'end') {
+        this._emitter.emit(name, ...args);
+      }
+    });
+  }
+
+  start(...args) {
+    if (this._shouldLoop && this.done) {
+      this.__board = new Board(this._level);
+      this._reset();
+    }
+    super.start(...args);
+  }
+
+  end() {
+    if (!this._shouldLoop) {
+      super.end();
+    }
+  }
+
+  _reset() {
     this._replayIndex = 0;
     this._tickingIndex = 0;
   }
 
-  _isDone() {
+  get done() {
     return this._replayIndex === this._replay.length;
   }
 
@@ -36,20 +65,11 @@ class ReplayIterator extends BoardDecorator {
   tick() {
     const move = this._nextMove();
     super.tick(move && replaySymbolsToDirections[move]);
-  }
-}
-
-/**
- * A utility to execute a replay on a board.
- **/
-export default class Replayer {
-  constructor(level, replay, options) {
-    this._level = level;
-    this._replay = replay;
-    this._options = options;
-  }
-
-  start() {
-    return new ReplayIterator(new Board(this._level), this._replay);
+    if (this.done) {
+      this.board.end(); // needed because the replay may not end in a win
+      if (this._shouldLoop) {
+        this.start();
+      }
+    }
   }
 }

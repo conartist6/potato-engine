@@ -2,6 +2,18 @@ import { entities, directions as _directions, Board, BoardPlugin } from 'potato-
 
 const { at, setAt, array2d, aligned, directions, directionsByOrientation } = _directions;
 
+// Magnets are polar, i.e. two horizontal magnets (S S) will not snap together.
+// Pulling is passive, being pulled happens on your turn.
+// For this to work right, objects must be attracted (move in response to detecting a magnet)
+// 55555      55555
+// 5s S5      5 s 5
+// 5   5  =>  5  S5
+// 5S s5      5Ss 5
+// 55555      55555
+// Magnetized bouncing also occurs in Python kye and kye2.0: (works w/ B too)
+// Ss S   =>  S sS   =>  Ss S   =>  ... ad infintem
+// This suggests that being attracted has priority over being stuck
+
 export default class MagnetismPlugin extends BoardPlugin {
   constructor(board, findEntities) {
     super(board, findEntities);

@@ -17,10 +17,10 @@ export default class Game extends BoardDecorator {
   /**
    * Start ticking at regular intervals
    **/
-  start(...args) {
+  start() {
     this._paused = false;
 
-    super.start(...args);
+    super.start();
     this._setTickTimeout();
   }
 
@@ -38,6 +38,7 @@ export default class Game extends BoardDecorator {
    * Stop ticking. Permanently!
    **/
   end() {
+    debugger;
     this._clearTickTimeout();
     super.end();
   }

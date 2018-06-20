@@ -23,18 +23,23 @@ export default class Game extends PureComponent {
   componentDidMount() {
     this.setupGame(this.props.game);
   }
+
   componentWillUnmount() {
     this.teardownGame(this.props.game);
   }
+
   componentDidUpdate(oldProps) {
     if (oldProps.game !== this.props.game) {
       this.teardownGame(oldProps.game);
       this.setupGame(this.props.game);
     }
   }
+
   setupGame(game) {
-    game.start('tick', () => this.forceUpdate());
+    game.start();
+    game.on('tick', () => this.forceUpdate());
   }
+
   teardownGame(game) {
     game.end();
   }

@@ -4,7 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "babel-plugin-transform-export-extensions": "^6.22.0",
-    "event-emitter": "^0.3.5",
+    "eventemitter2": "^5.0.1",
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
     "iter-tools": "^4.0.2",

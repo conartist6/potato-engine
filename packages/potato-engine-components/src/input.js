@@ -1,6 +1,5 @@
 import c from 'keycode-js';
-import makeEmitter from 'event-emitter';
-import allOff from 'event-emitter/all-off';
+import Emitter from 'eventemitter2';
 
 const keysToDirections = {
   [c.KEY_UP]: 'UP',
@@ -16,38 +15,50 @@ const keysToDirections = {
 export default class Input {
   constructor(getMode) {
     this._getMode = getMode;
+    this._emitter = new Emitter();
   }
+
   keydown(event) {
     const mode = this._getMode();
     if (mode === 'game') {
       const direction = keysToDirections[event.keyCode];
       if (direction) {
-        this.emit('move', direction);
+        this._emitter.emit('move', direction);
       }
       switch (event.keyCode) {
         case c.KEY_P:
-          this.emit('pause-unpause');
+          this._emitter.emit('pause-unpause');
           break;
         case c.KEY_R:
-          this.emit('reset');
+          this._emitter.emit('reset');
           break;
         case c.KEY_G:
-          this.emit('goto');
+          this._emitter.emit('goto');
           event.preventDefault();
           break;
       }
     } else if (mode === 'dialog') {
       if (/[a-zA-Z]/.test(event.keyCode)) {
-        this.emit('input', event.keyCode);
+        this._emitter.emit('input', event.keyCode);
       }
       if (event.keyCode === c.KEY_ESCAPE) {
-        this.emit('cancel-goto');
+        this._emitter.emit('cancel-goto');
       }
     }
   }
+
+  on(...args) {
+    this._emitter.on(...args);
+  }
+
+  off(...args) {
+    this._emitter.off(...args);
+  }
+
   setMode(mode) {
     this._mode = mode;
   }
+
   start(event, listener) {
     this._listener = e => this.keydown(e);
     document.addEventListener('keydown', this._listener);
@@ -55,12 +66,12 @@ export default class Input {
       this.on(event, listener);
     }
   }
+
   end() {
     if (this._listener) {
       document.removeEventListener('keydown', this._listener);
     }
     this._listener = null;
-    allOff(this);
+    this._emitter.removeAllListeners();
   }
 }
-makeEmitter(Input.prototype);

@@ -1,7 +1,6 @@
 import { Seq } from 'immutable';
-import makeEmitter from 'event-emitter';
+import Emitter from 'eventemitter2';
 import invariant from 'invariant';
-import allOff from 'event-emitter/all-off';
 import Random from './random';
 import BoardList from './board-list';
 import EntityList from './entity-list';
@@ -93,9 +92,11 @@ export default class Board {
 
     this._tickCounter = 0;
     this._isInitial = true;
+    this._ended = false;
 
-    this._emit = this.emit;
-    this.emit = undefined;
+    this._emitter = new Emitter();
+
+    this.on('win', () => this.end());
 
     if (!options.displayOnly) {
       this._spawn = [...this.getPlayer().coords];
@@ -109,16 +110,38 @@ export default class Board {
     this._pluginInsts = plugins.map(Plugin => new Plugin(this, findEntities));
   }
 
-  start(event, listener) {
-    if (event) {
-      this.on(event, listener);
-    }
-    this._emit('start');
+  on(...args) {
+    this._emitter.on(...args);
+  }
+
+  off(...args) {
+    this._emitter.off(...args);
+  }
+
+  onAny(...args) {
+    this._emitter.onAny(...args);
+  }
+
+  offAny(...args) {
+    this._emitter.offAny(...args);
+  }
+
+  once(...args) {
+    this._emitter.once(...args);
+  }
+
+  start() {
+    this._emitter.emit('start');
   }
 
   end() {
-    this._emit('end');
-    allOff(this);
+    if (this._ended) {
+      return;
+    }
+    this._ended = true;
+
+    this._emitter.emit('end');
+    this._emitter.removeAllListeners();
   }
 
   /**
@@ -163,7 +186,7 @@ export default class Board {
     }
 
     this._isInitial = false;
-    this._emit('tick');
+    this._emitter.emit('tick');
   }
 
   /**
@@ -322,7 +345,7 @@ export default class Board {
 
     if (entity instanceof entities.Player) {
       this.once('tick', () => {
-        this._emit('death');
+        this._emitter.emit('death');
       });
     }
 
@@ -450,9 +473,9 @@ export default class Board {
   _reemit(event, ...args) {
     switch (event) {
       case 'progress':
-        return this._emit(event, args);
+        return this._emitter.emit(event, args);
       case 'win':
-        return this._emit(event, this.recording);
+        return this._emitter.emit(event, this.recording);
     }
   }
 
@@ -504,4 +527,3 @@ export default class Board {
     }
   }
 }
-makeEmitter(Board.prototype);

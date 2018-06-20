@@ -1,6 +1,5 @@
 import Board from './board';
-import pipe from 'event-emitter/pipe';
-import makeEmitter from 'event-emitter';
+import Emitter from 'eventemitter2';
 
 /**
  * A base class for things which wish to look like a board.
@@ -8,9 +7,27 @@ import makeEmitter from 'event-emitter';
 export default class BoardDecorator {
   constructor(board) {
     this.__board = board;
+    this._emitter = new Emitter();
+  }
 
-    // prettier-ignore
-    pipe(board, this, '_emit');
+  on(...args) {
+    this._emitter.on(...args);
+  }
+
+  off(...args) {
+    this._emitter.off(...args);
+  }
+
+  onAny(...args) {
+    this._emitter.onAny(...args);
+  }
+
+  offAny(...args) {
+    this._emitter.offAny(...args);
+  }
+
+  once(...args) {
+    this._emitter.once(...args);
   }
 
   /**
@@ -24,13 +41,18 @@ export default class BoardDecorator {
     this.__board.tick(playerDirection);
   }
 
-  start(event, listener) {
-    this.__board.start(event, listener);
+  __reemitEvents() {
+    this.__board.onAny((name, ...args) => this._emitter.emit(name, ...args));
+  }
+
+  start() {
+    this.__reemitEvents();
+    this.__board.start();
+    this.on('end', () => this.end());
   }
 
   end() {
     this.__board.end();
+    this._emitter.removeAllListeners();
   }
 }
-
-makeEmitter(BoardDecorator.prototype);

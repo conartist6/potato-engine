@@ -10,10 +10,14 @@ export default class Level {
     this.seed = null;
     this.wrapEdges = false;
     Object.assign(this, props);
+    this.board = {
+      arr: props.board,
+      dimensions: props.dimensions,
+    };
   }
 
   count(EntityClass) {
-    return this.board.reduce(
+    return this.board.arr.reduce(
       (count, row) =>
         row.reduce((count, entity) => count + (entity instanceof EntityClass ? 1 : 0), count),
       0,

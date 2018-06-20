@@ -83,11 +83,16 @@ export const directionsAsDeltaCoords = {
  * @param {string} direction The direction to move in
  * @param {number} distance How far to move in the specified direction
  **/
-export function moveCoordsInDirection(coords, direction, distance = 1) {
+export function moveCoordsInDirection(dimensions, coords, direction, distance = 1) {
+  if (!inDimensions(dimensions, coords, direction, distance)) {
+    throw new Error('Attempted to move coordinates outside the board');
+  }
+
+  const { width, height } = dimensions;
   const deltaCoords = directionsAsDeltaCoords[direction];
 
-  coords[0] = coords[0] + deltaCoords[0] * distance;
-  coords[1] = coords[1] + deltaCoords[1] * distance;
+  coords[0] = (coords[0] + width + deltaCoords[0] * distance) % width;
+  coords[1] = (coords[1] + height + deltaCoords[1] * distance) % height;
 }
 
 /**
@@ -97,9 +102,9 @@ export function moveCoordsInDirection(coords, direction, distance = 1) {
  * @param {number} distance How far to displace in the specified direction
  * @return {string[]}
  **/
-export function getCoordsInDirection([x, y], direction, distance = 1) {
+export function getCoordsInDirection(dimensions, [x, y], direction, distance = 1) {
   const coords = [x, y];
-  moveCoordsInDirection(coords, direction);
+  moveCoordsInDirection(dimensions, coords, direction);
   return coords;
 }
 
@@ -112,16 +117,23 @@ export function getCoordsInDirection([x, y], direction, distance = 1) {
  * @return {mixed}
  **/
 export function at(array2d, coords, direction = null, distance = 1) {
+  const { dimensions, arr } = array2d;
+  const { width, height } = dimensions;
   if (!inArray2d(array2d, coords, direction, distance)) {
     return null;
   }
   const [x, y] = coords;
+  let atX;
+  let atY;
   if (!direction) {
-    return array2d[y][x];
+    atY = (y + height) % height;
+    atX = (x + width) % width;
   } else {
     const [dx, dy] = directionsAsDeltaCoords[direction];
-    return array2d[y + dy * distance][x + dx * distance];
+    atX = (x + width + dx * distance) % width;
+    atY = (y + height + dy * distance) % height;
   }
+  return arr[atY][atX];
 }
 
 /**
@@ -134,18 +146,23 @@ export function at(array2d, coords, direction = null, distance = 1) {
  * @return {mixed}
  **/
 export function setAt(array2d, coords, newValue, direction = null, distance = 1) {
+  const { dimensions, arr } = array2d;
+  const { width, height } = dimensions;
   if (!inArray2d(array2d, coords, direction, distance)) {
     return;
   }
   const [x, y] = coords;
+  let atX;
+  let atY;
   if (!direction) {
-    array2d[y][x] = newValue;
+    atY = (y + height) % height;
+    atX = (x + width) % width;
   } else {
     const [dx, dy] = directionsAsDeltaCoords[direction];
-    const atX = x + dx * distance;
-    const atY = y + dy * distance;
-    array2d[atY][atX] = newValue;
+    atX = (x + width + dx * distance) % width;
+    atY = (y + height + dy * distance) % height;
   }
+  arr[atY][atX] = newValue;
   return newValue;
 }
 
@@ -162,15 +179,31 @@ export function array2d(dimensions, initialValue, entityList = []) {
     const [x, y] = entity.coords;
     arr[y][x] = entity;
   }
-  return arr;
+  return {
+    arr,
+    dimensions,
+  };
 }
 
 export function* iterateArray2d(array2d) {
-  for (const row of array2d) {
-    for (const cell of row) {
-      yield cell;
+  const { dimensions, arr } = array2d;
+  for (let i = 0; i < dimensions.height; i++) {
+    for (let j = 0; j < dimensions.width; j++) {
+      yield arr[i][j];
     }
   }
+}
+
+export function inDimensions(dimensions, [x, y], direction = null, distance = 1) {
+  if (dimensions.wrap) {
+    return true;
+  }
+  if (direction) {
+    const [dx, dy] = directionsAsDeltaCoords[direction];
+    y = y + dy * distance;
+    x = x + dx * distance;
+  }
+  return x >= 0 && x < dimensions.width && y >= 0 && y < dimensions.height;
 }
 
 /**
@@ -181,13 +214,8 @@ export function* iterateArray2d(array2d) {
  * @param {?number} distance How far to displace in the specified direction
  * @return {boolean}
  **/
-export function inArray2d(array2d, [x, y], direction = null, distance = 1) {
-  if (direction) {
-    const [dx, dy] = directionsAsDeltaCoords[direction];
-    y = y + dy * distance;
-    x = x + dx * distance;
-  }
-  return x >= 0 && x < array2d[0].length && y >= 0 && y < array2d.length;
+export function inArray2d(array2d, coords, direction = null, distance = 1) {
+  return inDimensions(array2d.dimensions, coords, direction, distance);
 }
 
 /**

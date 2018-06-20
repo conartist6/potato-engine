@@ -42,7 +42,7 @@ const recordingDirectionSymbols = {
 export default class Board {
   constructor(level, options = {}) {
     const { Field } = entities;
-    const { dimensions } = level;
+    const { dimensions } = level.board;
 
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
@@ -57,6 +57,7 @@ export default class Board {
       getState,
       random: this._random,
       emit: (...args) => this._reemit(...args),
+      dimensions,
       ...Seq.Indexed([
         'shove',
         'move',
@@ -405,10 +406,11 @@ export default class Board {
    * Search outwards from a given center, looking for an open square.
    **/
   spiralSearch(coords, cb, maxRadius) {
+    const { dimensions } = this._board;
     let radius = 0;
 
     if (maxRadius == null) {
-      maxRadius = Math.max(this.dimensions.height, this.dimensions.width);
+      maxRadius = Math.max(dimensions.height, dimensions.width);
     }
 
     if (cb(coords)) {
@@ -418,16 +420,16 @@ export default class Board {
     const spiralCoords = [...coords];
     while (radius < maxRadius) {
       radius++;
-      moveCoordsInDirection(spiralCoords, 'DOWN_RIGHT');
+      moveCoordsInDirection(dimensions, spiralCoords, 'DOWN_RIGHT');
       for (const direction of directions) {
         for (let i = 0; i < radius * 2; i++) {
           if (inArray2d(this._board, spiralCoords) && cb(spiralCoords)) {
             return spiralCoords;
           }
-          moveCoordsInDirection(spiralCoords, direction);
+          moveCoordsInDirection(dimensions, spiralCoords, direction);
         }
       }
-      moveCoordsInDirection(spiralCoords, 'DOWN');
+      moveCoordsInDirection(dimensions, spiralCoords, 'DOWN');
     }
   }
 
@@ -437,7 +439,7 @@ export default class Board {
     }
 
     this.setAt(entity.coords, null);
-    moveCoordsInDirection(entity.coords, direction);
+    moveCoordsInDirection(this.dimensions, entity.coords, direction);
     this.setAt(entity.coords, entity);
 
     for (const plugin of this._pluginInsts) {
@@ -481,17 +483,21 @@ export default class Board {
 
   *[Symbol.iterator]() {
     const iteratorObjects = this._iteratorObjects;
-    const { width } = this.dimensions;
+    const { width, height } = this.dimensions;
     iteratorObjects.forEach(obj => this._initializeIteratorObject(obj));
 
-    for (let row = 0; row < this.dimensions.height; row++) {
-      for (let col = 0; col < this.dimensions.width; col++) {
+    const coords = [0, 0];
+    for (let row = 0; row < height; row++) {
+      for (let col = 0; col < width; col++) {
         const obj = iteratorObjects[row * width + col];
+
+        coords[0] = col;
+        coords[1] = row;
         obj.x = col;
         obj.y = row;
-        obj.entity = this._board[row][col];
-        obj.field = this._fields[row][col];
-        obj.static = this._statics[row][col];
+        obj.entity = at(this._board, coords);
+        obj.field = at(this._fields, coords);
+        obj.static = at(this._statics, coords);
 
         yield obj;
       }

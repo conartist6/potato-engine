@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import Entity from '../entity';
 import { entities } from 'potato-engine';
 
-import './board.css';
+import './style.css';
 
-export default class Board extends PureComponent {
+export default class Game extends PureComponent {
   constructor(props) {
     super(props);
     this._iterables = {
@@ -21,27 +21,29 @@ export default class Board extends PureComponent {
   }
 
   componentDidMount() {
-    this.setupBoard(this.props.board);
+    this.setupGame(this.props.game);
   }
   componentWillUnmount() {
-    this.teardownBoard(this.props.board);
+    this.teardownGame(this.props.game);
   }
   componentDidUpdate(oldProps) {
-    if (oldProps.board !== this.props.board) {
-      this.teardownBoard(oldProps.board);
-      this.setupBoard(this.props.board);
+    if (oldProps.game !== this.props.game) {
+      this.teardownGame(oldProps.game);
+      this.setupGame(this.props.game);
     }
   }
-  setupBoard(board) {
-    board.start('tick', () => this.forceUpdate());
+  setupGame(game) {
+    game.start('tick', () => this.forceUpdate());
   }
-  teardownBoard(board) {
-    board.end();
+  teardownGame(game) {
+    game.end();
   }
 
   *iterate(iteratorSelector) {
-    const { board } = this.props;
+    const { game } = this.props;
+    const { board } = game;
     const { height, width } = board.dimensions;
+
     const iterator = iteratorSelector(board);
 
     for (const entity of iterator) {
@@ -65,8 +67,10 @@ export default class Board extends PureComponent {
   }
 
   render() {
-    const { board } = this.props;
+    const { game } = this.props;
+    const { board } = game;
     const { height, width } = board.dimensions;
+
     if (!board) {
       return null;
     }

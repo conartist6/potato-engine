@@ -40,8 +40,9 @@ const recordingDirectionSymbols = {
  * Board: STUB
  **/
 export default class Board {
-  constructor(level, dimensions, options) {
+  constructor(level, options = {}) {
     const { Field } = entities;
+    const { dimensions } = level;
 
     const getState = options.getState || (() => {});
     this.dimensions = dimensions;
@@ -91,7 +92,6 @@ export default class Board {
 
     this._tickCounter = 0;
     this._isInitial = true;
-    this._paused = true;
 
     this._emit = this.emit;
     this.emit = undefined;
@@ -104,54 +104,20 @@ export default class Board {
       map(i => this._initializeIteratorObject({}), range(dimensions.width * dimensions.height)),
     );
 
-    const { plugins } = options;
+    const plugins = options.plugins || [];
     this._pluginInsts = plugins.map(Plugin => new Plugin(this, findEntities));
   }
 
-  /**
-   * Start ticking at regular intervals
-   **/
   start(event, listener) {
-    this._paused = false;
-    this.on('tick', () => {
-      this._setTickTimeout();
-    });
-    this.on(event, listener);
-    this._setTickTimeout();
+    if (event) {
+      this.on(event, listener);
+    }
     this._emit('start');
   }
 
-  /**
-   * Set the game's play/pause state
-   **/
-  setPaused(paused) {
-    this._paused = paused;
-    if (!this._paused) {
-      this.tick();
-    }
-  }
-
-  /**
-   * Stop ticking. Permanently!
-   **/
   end() {
-    this._clearTickTimeout();
     this._emit('end');
     allOff(this);
-  }
-
-  _setTickTimeout() {
-    this._clearTickTimeout();
-    if (!this._paused) {
-      this._tickTimeout = setTimeout(() => this.tick(), 100);
-    }
-  }
-
-  _clearTickTimeout() {
-    if (this._tickTimeout) {
-      clearTimeout(this._tickTimeout);
-    }
-    this._tickTimeout = null;
   }
 
   /**

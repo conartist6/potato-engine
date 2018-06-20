@@ -8,6 +8,7 @@ export default class Level {
     //header, dimensions, board, index = null, seed = null) {
     this.index = null;
     this.seed = null;
+    this.wrapEdges = false;
     Object.assign(this, props);
   }
 

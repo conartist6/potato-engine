@@ -48,7 +48,10 @@ export default class BoardDecorator {
   start() {
     this.__reemitEvents();
     this.__board.start();
-    this.on('end', () => this.end());
+    if (this._onEnd) {
+      this.off('end', this._onEnd);
+    }
+    this.on('end', (this._onEnd = () => this.end()));
   }
 
   end() {

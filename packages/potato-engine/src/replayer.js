@@ -8,12 +8,16 @@ const replaySymbolsToDirections = {
 };
 
 export default class Replayer extends BoardDecorator {
-  constructor(level, replay, shouldLoop) {
-    super(new Board(level));
+  constructor(level, replay, { loop, displayOnly, plugins }) {
+    const options = { displayOnly, plugins };
+
+    super(new Board(level, options));
 
     this._level = level;
     this._replay = replay;
-    this._shouldLoop = shouldLoop;
+    this._options = options;
+    this._displayOnly = displayOnly;
+    this._shouldLoop = loop;
 
     this._reset();
   }
@@ -28,7 +32,7 @@ export default class Replayer extends BoardDecorator {
 
   start(...args) {
     if (this._shouldLoop && this.done) {
-      this.__board = new Board(this._level);
+      this.__board = new Board(this._level, this._options);
       this._reset();
     }
     super.start(...args);

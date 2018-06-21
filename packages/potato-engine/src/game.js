@@ -6,6 +6,7 @@ import BoardDecorator from './board-decorator';
 export default class Game extends BoardDecorator {
   constructor(...args) {
     super(...args);
+
     this._paused = true;
   }
 
@@ -28,26 +29,26 @@ export default class Game extends BoardDecorator {
    * Set the game's play/pause state
    **/
   setPaused(paused) {
-    this._paused = paused;
-    if (!this._paused) {
+    if (!paused && this._paused) {
       this.tick();
+    } else if (paused && !this._paused) {
+      this._clearTickTimeout();
     }
+    this._paused = paused;
   }
 
   /**
    * Stop ticking. Permanently!
    **/
   end() {
-    debugger;
     this._clearTickTimeout();
     super.end();
   }
 
   _setTickTimeout() {
     this._clearTickTimeout();
-    if (!this._paused) {
-      this._tickTimeout = setTimeout(() => this.tick(), 100);
-    }
+
+    this._tickTimeout = setTimeout(() => this.tick(), 100);
   }
 
   _clearTickTimeout() {

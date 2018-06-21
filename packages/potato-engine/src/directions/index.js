@@ -195,7 +195,8 @@ export function* iterateArray2d(array2d) {
 }
 
 export function inDimensions(dimensions, [x, y], direction = null, distance = 1) {
-  if (dimensions.wrap) {
+  const { wrap, width, height } = dimensions;
+  if (wrap === 'both') {
     return true;
   }
   if (direction) {
@@ -203,7 +204,9 @@ export function inDimensions(dimensions, [x, y], direction = null, distance = 1)
     y = y + dy * distance;
     x = x + dx * distance;
   }
-  return x >= 0 && x < dimensions.width && y >= 0 && y < dimensions.height;
+  const xInDimensions = wrap === 'x' || (x >= 0 && x < width);
+  const yInDimensions = wrap === 'y' || (y >= 0 && y < height);
+  return xInDimensions && yInDimensions;
 }
 
 /**

@@ -13,7 +13,7 @@ import {
   setAt,
   array2d,
   iterateArray2d,
-  inArray2d,
+  inDimensions,
   copyCoords,
   directions,
   getDeflections,
@@ -60,6 +60,7 @@ export default class Board {
       ...Seq.Indexed([
         'shove',
         'move',
+        'inBoard',
         'eat',
         'replace',
         'create',
@@ -200,6 +201,10 @@ export default class Board {
     );
   }
 
+  inBoard(coords, direction = null, distance = 1) {
+    return inDimensions(this.dimensions, coords, direction, distance);
+  }
+
   /**
    * Set the entity at coords (with optional offset).
    **/
@@ -231,6 +236,9 @@ export default class Board {
    * Going nowhere fast?
    **/
   canMove(entity, direction) {
+    if (!this.inBoard(entity.coords, direction)) {
+      return false;
+    }
     const target = this.at(entity.coords, direction);
     return target == null || target instanceof entities.Field;
   }
@@ -361,9 +369,14 @@ export default class Board {
     const { coords } = entity;
     const targetEntity = this.at(coords, direction);
 
-    if (!targetEntity) {
-      return true; // for canMove
+    if (!this.inBoard(entity.coords, direction)) {
+      return false;
     }
+
+    if (!targetEntity) {
+      return true;
+    }
+
     if (!entity instanceof entities.Interactor) {
       return false;
     }
@@ -446,7 +459,7 @@ export default class Board {
       moveCoordsInDirection(dimensions, spiralCoords, 'DOWN_RIGHT');
       for (const direction of directions) {
         for (let i = 0; i < radius * 2; i++) {
-          if (inArray2d(this._board, spiralCoords) && cb(spiralCoords)) {
+          if (this.inBoard(spiralCoords) && cb(spiralCoords)) {
             return spiralCoords;
           }
           moveCoordsInDirection(dimensions, spiralCoords, direction);

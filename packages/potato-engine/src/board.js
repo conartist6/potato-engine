@@ -16,7 +16,6 @@ import {
   inDimensions,
   copyCoords,
   directions,
-  getDeflections,
   directionsByOrientation,
   leftOf,
   rightOf,
@@ -145,6 +144,10 @@ export default class Board {
     this._emitter.removeAllListeners();
   }
 
+  get random() {
+    return this._random;
+  }
+
   /**
    * Calling tick runs the main game loop once.
    **/
@@ -266,12 +269,14 @@ export default class Board {
       return false;
     }
 
-    let target = this.at(entity.coords, direction);
-
-    if (entity.roundness !== 5 && target && target.roundness !== 5) {
-      direction = this._deflect(entity, direction);
-      target = this.at(entity.coords, direction); // should always be null?
+    for (const plugin of this._pluginInsts) {
+      direction = plugin.willMove ? plugin.willMove(entity, direction) : direction;
+      if (!direction) {
+        return false;
+      }
     }
+
+    const target = this.at(entity.coords, direction);
 
     // use null for the fallthrough value.
     // Now true means we can definitely move there, false means we definitely can't,
@@ -411,38 +416,6 @@ export default class Board {
 
     const shouldMove = !moveCanceled && (newTarget === null || newTarget instanceof entities.Field);
     return shouldMove;
-  }
-
-  _deflect(entity, direction) {
-    const target = this.at(entity.coords, direction);
-
-    // Does the roundness of the object I hit permit me only a particular direction?
-    const directions = getDeflections(direction, target.roundness);
-
-    if (directions) {
-      const [direction1, direction2] = directions;
-      // Need to check that nothing is in the way to the left or right!
-
-      const canUse1 = !direction1
-        ? false
-        : this.canMove(entity, direction1) && this.canMove(entity, leftOf(direction));
-      const canUse2 = !direction2
-        ? false
-        : this.canMove(entity, direction2) && this.canMove(entity, rightOf(direction));
-
-      if (canUse1 && canUse2) {
-        if (this._random.nextBoolean()) {
-          direction = direction1;
-        } else {
-          direction = direction2;
-        }
-      } else if (canUse1) {
-        direction = direction1;
-      } else if (canUse2) {
-        direction = direction2;
-      }
-    }
-    return direction;
   }
 
   /**

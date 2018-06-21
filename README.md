@@ -1,14 +1,10 @@
-# Kye
+# Potato Engine
 
 ![Game screenshot](https://raw.githubusercontent.com/conartist6/potato-engine/master/default-kye.png)
 
 This is a monorepo of npm packages. For further information on the purpose of this repository, see [packages/potato-engine](https://github.com/conartist6/potato-engine/blob/master/packages/potato-engine/)
 
-This project is in alpha.
-
-## Developing with the kye engine
-
-When are you are trying to work on the engine as it is used in your game, you can check out your game's repo (with a package.json) into the games folder, which is gitignored. Running `yarn install` in the root of this repository will link the game engine packages for you.
+This project is in beta.
 
 ## History
 

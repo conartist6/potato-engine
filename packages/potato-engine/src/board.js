@@ -235,12 +235,27 @@ export default class Board {
   /**
    * Going nowhere fast?
    **/
-  canMove(entity, direction) {
+  canMove(entity, direction, canMove = false) {
     if (!this.inBoard(entity.coords, direction)) {
       return false;
     }
     const target = this.at(entity.coords, direction);
-    return target == null || target instanceof entities.Field;
+    const onField = at(this._fields, entity.coords);
+
+    if (onField && !onField.canLeave(this._entityApi, entity, direction)) {
+      return false;
+    }
+
+    if (target == null) {
+      return true;
+    } else if (target.isStatic) {
+      return false;
+    } else if (target instanceof entities.Field) {
+      return target.canEnter(this._entityApi, entity, flip(direction));
+    } else if (!entity instanceof entities.Interactor) {
+      return false;
+    }
+    return canMove;
   }
 
   /**
@@ -251,14 +266,21 @@ export default class Board {
       return false;
     }
 
-    let targetEntity = this.at(entity.coords, direction);
+    let target = this.at(entity.coords, direction);
 
-    if (entity.roundness !== 5 && targetEntity && targetEntity.roundness !== 5) {
+    if (entity.roundness !== 5 && target && target.roundness !== 5) {
       direction = this._deflect(entity, direction);
-      targetEntity = this.at(entity.coords, direction); // should always be null?
+      target = this.at(entity.coords, direction); // should always be null?
     }
 
-    const canMove = this._interact(entity, direction);
+    // use null for the fallthrough value.
+    // Now true means we can definitely move there, false means we definitely can't,
+    // and null means that we'll have to run interact to find out.
+    let canMove = this.canMove(entity, direction, null);
+
+    if (canMove === null || (canMove === true && target instanceof entities.Field)) {
+      canMove = this._interact(entity, direction);
+    }
     if (canMove) {
       this._move(entity, direction);
     }
@@ -268,8 +290,8 @@ export default class Board {
   /**
    * Nom nom nom
    **/
-  eat(entity, targetEntity) {
-    this.destroy(targetEntity);
+  eat(entity, target) {
+    this.destroy(target);
   }
 
   /**
@@ -367,50 +389,35 @@ export default class Board {
 
   _interact(entity, direction) {
     const { coords } = entity;
-    const targetEntity = this.at(coords, direction);
-
-    if (!this.inBoard(entity.coords, direction)) {
-      return false;
-    }
-
-    if (!targetEntity) {
-      return true;
-    }
-
-    if (!entity instanceof entities.Interactor) {
-      return false;
-    }
+    const target = this.at(coords, direction);
 
     let moveCanceled = false;
-    if (!(targetEntity instanceof entities.Field)) {
-      moveCanceled = entity.interact(this._entityApi, targetEntity, direction);
+    if (!(target instanceof entities.Field)) {
+      moveCanceled = entity.interact(this._entityApi, target, direction);
     }
 
-    const newTargetEntity = this.at(coords, direction);
-    if (!targetEntity.isStatic) {
-      const eaten = targetEntity.state.willBeDeleted;
-      const reactingEntity = eaten ? targetEntity : newTargetEntity;
+    const newTarget = this.at(coords, direction);
 
-      if (reactingEntity instanceof entities.Interactor) {
-        // If you shove something, it isn't next to you anymore. It can't do anything to you.
-        // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
-        reactingEntity.react(this._entityApi, newTargetEntity, flip(direction));
-      } else if (reactingEntity instanceof entities.Field) {
-        moveCanceled =
-          reactingEntity.enter(this._entityApi, entity, flip(direction)) || moveCanceled;
-      }
+    const eaten = target.state.willBeDeleted;
+    const reactingEntity = eaten ? target : newTarget;
+
+    if (reactingEntity instanceof entities.Field) {
+      reactingEntity.enter(this._entityApi, entity, flip(direction));
+    } else if (reactingEntity instanceof entities.Interactor) {
+      // If you shove something, it isn't next to you anymore. It can't do anything to you.
+      // It is possible that an object being eaten should have a chance to do something (e.g. a key!)
+      reactingEntity.react(this._entityApi, newTarget, flip(direction));
     }
 
-    const shouldMove =
-      !moveCanceled && (newTargetEntity === null || newTargetEntity instanceof entities.Field);
+    const shouldMove = !moveCanceled && (newTarget === null || newTarget instanceof entities.Field);
     return shouldMove;
   }
 
   _deflect(entity, direction) {
-    const targetEntity = this.at(entity.coords, direction);
+    const target = this.at(entity.coords, direction);
 
     // Does the roundness of the object I hit permit me only a particular direction?
-    const directions = getDeflections(direction, targetEntity.roundness);
+    const directions = getDeflections(direction, target.roundness);
 
     if (directions) {
       const [direction1, direction2] = directions;

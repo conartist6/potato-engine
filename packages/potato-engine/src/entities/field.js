@@ -6,31 +6,45 @@ import Entity from '../entity';
  **/
 export default class Field extends Entity {
   /**
-   * Triggered when an entity enters the field.
-   * If the entity moves from one field to another of the same type this will not trigger.
-   * The default (empty) implementation will allow the entity to move onto the field.
-   * You may return true from this method to cancel the entity's movement.
+   * Triggered when an entity express intent to enter a field.
+   * Return true to allow the entity to enter, or false to block it. Returns true by default.
    *
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {Entity} target The colliding entity.
-   * @returns {boolean} Return true to cancel the intended movement.
+   * @param {Entity} target The entering entity.
+   * @param {string} direction The direction from which the entity is entering
    **/
-  enter(board, target) {
-    return false;
+  canEnter(board, target, direction) {
+    return true;
   }
 
   /**
-   * Triggered when an entity leaves the field.
-   * If the entity moves from one field to another of the same type this will not trigger.
-   * The default (empty) implementation will allow the entity to move off of the field.
-   * You may return true from this method to cancel the entity's movement.
+   * Triggered when an entity enters the field.
    *
    * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
-   * @param {Entity} target The colliding entity.
-   * @returns {boolean} Return true to cancel the intended movement.
+   * @param {Entity} target The entering entity.
+   * @param {string} direction The direction from which the entity is entering
    **/
-  leave(board, target) {
-    return false;
+  enter(board, target, direction) {}
+
+  /**
+   * Triggered when an entity leaves the field.
+   *
+   * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
+   * @param {Entity} target The departing entity.
+   * @param {string} direction The direction in which the entity is departing
+   **/
+  leave(board, target, direction) {}
+
+  /**
+   * Triggered when an entity express intent to leave a field.
+   * Return true to allow the entity to leave, or false to block it. Returns true by default.
+   *
+   * @param {Board} board A subset of Board's public methods suitable for defining entity behavior.
+   * @param {Entity} target The departing entity.
+   * @param {string} direction The direction in which the entity is departing
+   **/
+  canLeave(board, target, direction) {
+    return true;
   }
 }
 Field.__name = 'Field'; // uglify killin' me

@@ -2688,9 +2688,9 @@ istextorbinary@2.1.0:
     editions "^1.1.1"
     textextensions "1 || 2"
 
-iter-tools@^4.0.2:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/iter-tools/-/iter-tools-4.1.1.tgz#94c70341f70c568d2e314e62f8bee1ca8505f414"
+iter-tools@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/iter-tools/-/iter-tools-5.0.1.tgz#496559615fd94a0d0e8b62242a9ea9f61e206fba"
   dependencies:
     "@babel/runtime" "^7.0.0-beta.49"
     clone-regexp "^1.0.1"

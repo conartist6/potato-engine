@@ -5,7 +5,7 @@
   "dependencies": {
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
-    "iter-tools": "^4.0.2",
+    "iter-tools": "^5.0.1",
     "prando": "^3.0.3",
     "strip-bom": "^3.0.0"
   },

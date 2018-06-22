@@ -2,6 +2,9 @@
   "name": "potato-engine-plugin-deflection",
   "version": "0.1.0",
   "license": "MIT",
+  "dependencies": {
+    "immutable": "^3.8.2"
+  },
   "peerDependencies": {
     "potato-engine": "0.1.0"
   },

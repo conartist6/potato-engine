@@ -25,6 +25,10 @@ export default class Game extends BoardDecorator {
     this._setTickTimeout();
   }
 
+  get paused() {
+    return this._paused;
+  }
+
   /**
    * Set the game's play/pause state
    **/

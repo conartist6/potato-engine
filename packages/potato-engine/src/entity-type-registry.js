@@ -1,4 +1,4 @@
-import { Map, Seq } from 'immutable';
+import { Map } from 'immutable';
 import invariant from 'invariant';
 
 /**

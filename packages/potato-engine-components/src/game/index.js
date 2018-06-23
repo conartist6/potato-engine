@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import Entity from '../entity';
-import { entities } from 'potato-engine';
 import c from 'keycode-js';
 
 import './style.css';
@@ -95,7 +94,6 @@ export default class Game extends PureComponent {
   *iterate(iteratorSelector) {
     const { game } = this.props;
     const { board } = game;
-    const { height, width } = board.dimensions;
 
     const iterator = iteratorSelector(board);
 

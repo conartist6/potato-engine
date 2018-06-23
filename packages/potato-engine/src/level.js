@@ -1,5 +1,3 @@
-import invariant from 'invariant';
-
 /**
  * Level: STUB
  **/

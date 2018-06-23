@@ -4,25 +4,18 @@ import invariant from 'invariant';
 import Random from './random';
 import BoardList from './board-list';
 import EntityList from './entity-list';
-import Entity, { EntityState } from './entity';
+import Entity from './entity';
 import { filter, map, range } from 'iter-tools';
 
 import {
-  aligned,
   at,
   setAt,
   array2d,
   iterateArray2d,
   inDimensions,
-  copyCoords,
   directions,
-  directionsByOrientation,
-  leftOf,
-  rightOf,
   flip,
   moveCoordsInDirection,
-  randomDirection,
-  randomOrientation,
 } from './directions';
 
 import entities from './entities';

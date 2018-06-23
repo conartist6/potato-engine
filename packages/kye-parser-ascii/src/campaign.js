@@ -1,4 +1,3 @@
-import { Map } from 'immutable';
 import { parse as parseLevel, serialize as serializeLevel, LEVEL_HEADER_LINES } from './level';
 import invariant from 'invariant';
 import Prando from 'prando';

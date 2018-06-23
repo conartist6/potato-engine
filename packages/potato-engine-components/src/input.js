@@ -1,5 +1,4 @@
 import Emitter from 'eventemitter2';
-import c from 'keycode-js';
 
 export class BrowserInput {
   constructor() {

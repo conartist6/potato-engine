@@ -1,4 +1,4 @@
-import { entities, directions as _directions, Board, BoardPlugin } from 'potato-engine';
+import { entities, directions as _directions, BoardPlugin } from 'potato-engine';
 
 const { at, setAt, array2d, aligned, directions, directionsByOrientation } = _directions;
 

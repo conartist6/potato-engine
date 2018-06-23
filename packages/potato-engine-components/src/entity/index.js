@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import cx from 'classnames'; // :'
 import dasherize from 'dasherize';
-import { Set } from 'immutable';
-import { entities as e } from 'potato-engine';
 
 export default class Entity extends Component {
   constructor() {

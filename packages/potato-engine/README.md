@@ -6,7 +6,13 @@ The intention is for there to be an extremely easy workflow to take a playable g
 
 What the Potato Engine is not is an engine on which any game can be built, and that is not the intention. Most importantly in the Potato Engine every game piece must reside in one and only one game square. You don't get to animate between squares. There are no physics. You can't write Pac Man, Mario, or Space Invaders on the Potato Engine. You should, however, be able to write something like the original version of Chip's Challenge quite easily.
 
-If you just want to get started, please go take a look at [Kye](https://github.com/conartist6/kye), which is the reference game implementation on the engine. By following that repository's [setup instructions](https://github.com/conartist6/kye#initial-setup) you will end up with a working game whose source code you can start tweaking. You will see the results right away!
+### Installing
+
+You can install the engine with yarn or npm, but do you want to?? It is far easier to fork a project which already has the engine and its rendering layer installed and wired up.
+
+If you just want to get started quickly, please go take a look at [Kye](https://github.com/conartist6/kye), which is the reference game implementation on the engine. By following that repository's [setup instructions](https://github.com/conartist6/kye#initial-setup) you will end up with a working game whose source code you can start tweaking. You will see the results right away!
+
+If you want to install the engine in your own project, simply run `yarn add potato-engine` or `npm install --save potato-engine`.
 
 ### The mechanics
 

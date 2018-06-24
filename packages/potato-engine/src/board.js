@@ -28,7 +28,8 @@ const recordingDirectionSymbols = {
 };
 
 /**
- * Board: STUB
+ * Board is the main class used to track game state. Calling its {@link tick} method will update the game,
+ * and should also cause any game renderers to display the updated state as well.
  **/
 export default class Board {
   constructor(level, options = {}) {
@@ -141,6 +142,12 @@ export default class Board {
     return this._random;
   }
 
+  callPluginMethod(methodName, ...args) {
+    for (const plugin of this._pluginInsts) {
+      plugin[methodName] && plugin[methodName](...args);
+    }
+  }
+
   /**
    * Calling tick runs the main game loop once.
    **/
@@ -157,9 +164,7 @@ export default class Board {
         this._isInitial || // entities start asleep
         !(this._tickCounter % entity.frequency === 0 || (!scheduled && entity.opportunistic)); // not every entity thinks every tick
       if (!sleeping) {
-        for (const plugin of this._pluginInsts) {
-          plugin.onEntityTick && plugin.onEntityTick(entity);
-        }
+        this.callPluginMethod('onEntityTick', entity);
       }
       if (entity.think && !sleeping) {
         entity.think(this._entityApi, entities);
@@ -326,9 +331,7 @@ export default class Board {
     const sourceList = this._getList(sourceEntity);
     const destList = destIsEntity ? this._getList(replaceWith) : null;
 
-    for (const plugin of this._pluginInsts) {
-      plugin.untrack && plugin.untrack(sourceEntity, 'replace');
-    }
+    this.callPluginMethod('untrack', sourceEntity, 'replace');
 
     let targetEntity;
     if (!destIsEntity || sourceList === destList) {
@@ -338,9 +341,7 @@ export default class Board {
       targetEntity = destList.add(replaceWith);
     }
 
-    for (const plugin of this._pluginInsts) {
-      plugin.track && plugin.track(targetEntity, 'replace');
-    }
+    this.callPluginMethod('track', targetEntity, 'replace');
 
     const sourceBoard = this._get2dArray(sourceEntity);
     const destBoard = this._get2dArray(targetEntity);
@@ -357,9 +358,7 @@ export default class Board {
     const newEntity = this._getList(entity).add(entity);
     setAt(this._get2dArray(entity), entity.coords, newEntity);
 
-    for (const plugin of this._pluginInsts) {
-      plugin.track && plugin.track(newEntity, 'create');
-    }
+    this.callPluginMethod('track', newEntity, 'create');
 
     return newEntity;
   }
@@ -377,9 +376,7 @@ export default class Board {
       });
     }
 
-    for (const plugin of this._pluginInsts) {
-      plugin.untrack && plugin.untrack(entity, 'destroy');
-    }
+    this.callPluginMethod('untrack', entity, 'destroy');
 
     this._getList(entity).remove(entity);
     setAt(this._get2dArray(entity), entity.coords, null);
@@ -443,17 +440,13 @@ export default class Board {
   }
 
   _move(entity, direction) {
-    for (const plugin of this._pluginInsts) {
-      plugin.untrack && plugin.untrack(entity, 'move');
-    }
+    this.callPluginMethod('untrack', entity, 'move');
 
     this.setAt(entity.coords, null);
     moveCoordsInDirection(this.dimensions, entity.coords, direction);
     this.setAt(entity.coords, entity);
 
-    for (const plugin of this._pluginInsts) {
-      plugin.track && plugin.track(entity, 'move');
-    }
+    this.callPluginMethod('track', entity, 'move');
   }
 
   _reemit(event, ...args) {

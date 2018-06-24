@@ -1,3 +1,3 @@
 ## Potato Engine Plugin: Magnetism
 
-This plugin creates the behavior that magnets (or sticky blocks) had in the game Kye.
+This plugin creates the behavior in Kye where round entities are capable of sliding past each other

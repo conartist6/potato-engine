@@ -4,7 +4,7 @@ This project is an engine for 2D games, particularly for simple box-pushing kind
 
 The intention is for there to be an extremely easy workflow to take a playable game that runs in a _modern_ web browser, fork a copy for yourself, and start tweaking the game's rules right away. It should continue to be simple to take more and more control over from the engine if you know what you are doing.
 
-What the Potato Engine is not is an engine on which any game can be built, and that is not the intention. Most importantly in the Potato Engine every game piece must reside in one and only one game square. You don't get to animate between squares. There are no physics. You can't write Pac Man, Mario, or Space Invaders on the Potato Engine. You should, however, be able to write something like the original version of Chip's Challenge quite easily.
+The Potato Engine is not an engine on which any game can be built, and that is not the intention. Most importantly in the Potato Engine every game piece must reside in one and only one game square. You don't get to animate between squares. There are no physics. You can't write Pac Man, Mario, or Space Invaders on the Potato Engine. You should, however, be able to write something like the original version of Chip's Challenge quite easily.
 
 ### Installing
 

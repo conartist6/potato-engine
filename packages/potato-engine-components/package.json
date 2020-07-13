@@ -2,6 +2,12 @@
   "name": "potato-engine-components",
   "version": "0.1.0",
   "license": "MIT",
+  "main": "lib/index",
+  "module": "lib/index",
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "babel --plugins=@babel/plugin-transform-modules-commonjs src --out-dir lib"
+  },
   "dependencies": {
     "classnames": "^2.2.5",
     "dasherize": "^2.0.0",
@@ -9,29 +15,15 @@
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
     "keycode-js": "^1.0.0",
-    "renamer": "^0.6.1"
+    "styled-components": "^5.1.1"
   },
   "peerDependencies": {
     "potato-engine": "0.1.0",
     "react": "^16.3.2"
   },
-  "devDependencies": {
-    "babel-plugin-transform-react-display-name": "^6.4.0",
-    "babel-plugin-transform-react-jsx": "^6.4.0",
-    "broccoli-sass-modular": "^2.0.0",
-    "rimraf": "^2.6.2"
-  },
   "sideEffects": [
     "*.scss"
   ],
-  "scripts": {
-    "watch": "broccoli-timepiece lib",
-    "build": "broccoli build --overwrite lib",
-    "clean": "rimraf lib",
-    "prepare": "yarn run clean && yarn run build"
-  },
-  "main": "lib/index",
-  "module": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/conartist6/potato-engine/tree/master/packages/potato-engine-components"
@@ -39,5 +31,8 @@
   "author": {
     "name": "Conrad Buck",
     "email": "c@burningpotato.com"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.10.4"
   }
 }

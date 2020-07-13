@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import Entity from '../entity';
 import c from 'keycode-js';
+import styled from 'styled-components'
 
-import './style.css';
+import Entity from '../entity';
 
 const keysToDirections = {
   [c.KEY_UP]: 'UP',
@@ -14,6 +14,16 @@ const keysToDirections = {
   [c.KEY_RIGHT]: 'RIGHT',
   [c.KEY_D]: 'RIGHT',
 };
+
+const Board = styled.div`
+  position: relative;
+`;
+
+const Layer = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+`;
 
 export default class Game extends PureComponent {
   constructor(props) {
@@ -127,11 +137,11 @@ export default class Game extends PureComponent {
     }
 
     return (
-      <div className="board" style={{ height: `${height * 20}px`, width: `${width * 20}px` }}>
-        <div className="layer statics">{this._iterables.statics}</div>
-        <div className="layer fields">{this._iterables.fields}</div>
-        <div className="layer entities">{this._iterables.entities}</div>
-      </div>
+      <Board className="board" style={{ height: `${height * 20}px`, width: `${width * 20}px`}}>
+        <Layer className="layer statics">{this._iterables.statics}</Layer>
+        <Layer className="layer fields">{this._iterables.fields}</Layer>
+        <Layer className="layer entities">{this._iterables.entities}</Layer>
+      </Board>
     );
   }
 }
